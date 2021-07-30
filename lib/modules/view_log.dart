@@ -32,6 +32,17 @@ class _ViewLogState extends State<ViewLog> {
   TextEditingController searchCtrlr = TextEditingController();
   bool promptLocked = false;
   String searchString = "";
+  late String displayTitle, displayTag;
+  late List<String> displayContent;
+  late Log logBuffer;
+
+  @override
+  void initState() {
+    super.initState();
+    displayTitle = widget.logTitle;
+    displayContent = widget.logContents;
+    //delayedLogin();
+  }
   //
 
   List<PopupItem> menu = [
@@ -43,13 +54,13 @@ class _ViewLogState extends State<ViewLog> {
     //PopupItem(0, "nukeTest"), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
   ];
   String _selectedChoices = "none";
-  void _select(String choice) {
+  Future<void> _select(String choice) async {
     setState(() {
       _selectedChoices = choice;
     });
     switch (_selectedChoices) {
       case 'Update':
-        Navigator.push(
+        await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => new UpdateLog(
@@ -59,6 +70,7 @@ class _ViewLogState extends State<ViewLog> {
                           widget.logContents.map((s) => s as String).toList(),
                       logID: widget.logID.toString(),
                     )));
+        reExtract(widget.logID);
         break;
       case 'Delete':
         break;
@@ -100,6 +112,27 @@ class _ViewLogState extends State<ViewLog> {
       tokenStore.setString('token', 'empty');
       return 'empty token';
     }
+  }
+
+  Future<int> reExtract(String id) async {
+    disguisedToast(
+        context: context,
+        message: 'Updating Log',
+        messageStyle: cxTextStyle(colour: colour('lred')));
+    await Future.delayed(Duration(seconds: 2), () {});
+    String retrievedToken = '';
+    await prefSetup().then((value) => {retrievedToken = value!});
+    final response = await http.get(
+      Uri.parse('https://nexus-omega.herokuapp.com/get/' + id),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
+      },
+    );
+    setState(() {
+      logBuffer = json.decode(response.body);
+    });
+    return (response.statusCode);
   }
 
   Future<int> deleteLog(String id) async {
@@ -174,7 +207,7 @@ class _ViewLogState extends State<ViewLog> {
             child: Padding(
               padding: EdgeInsets.all(15),
               child: Text(
-                widget.logTitle,
+                displayTitle,
                 style: cxTextStyle(style: 'bold', size: 40),
               ),
             ),
@@ -226,7 +259,7 @@ class _ViewLogState extends State<ViewLog> {
   }
 
   Widget _contentsOfIndex() {
-    List<String> temp = widget.logContents;
+    List<String> temp = displayContent;
     return ListView.builder(
         shrinkWrap: true,
         itemCount: temp.length,
@@ -241,12 +274,6 @@ class _ViewLogState extends State<ViewLog> {
                     style: 'bold', colour: colour('white'), size: 15)),
           );
         });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    //delayedLogin();
   }
 
   statusCodeEval(int? statusCode) async {

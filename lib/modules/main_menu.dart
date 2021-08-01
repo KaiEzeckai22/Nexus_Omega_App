@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus_omega_app/model/log.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:nexus_omega_app/modules/dialogues.dart';
 import 'package:nexus_omega_app/modules/logs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
@@ -19,7 +20,7 @@ class MainMenu extends StatefulWidget {
 class _MainMenuState extends State<MainMenu> {
   late SharedPreferences tokenStore;
   List<Log> contactsList = [];
-  List<String> main_menu_options = ['Logs', 'Dialogues (OTW)'];
+  List<String> main_menu_options = ['Logs', 'Dialogues'];
   String debug = "";
   int numdeBug = 0;
   TextEditingController searchCtrlr = TextEditingController();
@@ -65,7 +66,7 @@ class _MainMenuState extends State<MainMenu> {
             message: '   Would you like\n   to proceed?',
             messageStyle: cxTextStyle(style: 'italic', size: 16),
             button1Name: 'Yes',
-            button1Colour: colour('green'),
+            button1Colour: colour('dgreen'),
             button1Callback: () => setState(() {
                   numdeBug++;
                   print(numdeBug);
@@ -233,6 +234,10 @@ class _MainMenuState extends State<MainMenu> {
         //disguisedToast(context: context, message: main_menu_options[index]);
         break;
       case 1:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => new DialogueList()));
+        //disguisedToast(context: context, message: main_menu_options[index]);
+        break;
         break;
       default:
         break;

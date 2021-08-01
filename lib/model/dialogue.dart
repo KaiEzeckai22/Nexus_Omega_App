@@ -1,13 +1,13 @@
-class Log {
+class Dialogue {
   late final String title;
   late final String tags;
   late final String author;
   late final List<dynamic> content;
   late String id;
 
-  Log(this.title, this.tags, this.content, this.author);
+  Dialogue(this.title, this.tags, this.content, this.author);
 
-  Log.fromJson(Map json)
+  Dialogue.fromJson(Map json)
       : title = json['title'],
         tags = json['tags'],
         content = json['content'],

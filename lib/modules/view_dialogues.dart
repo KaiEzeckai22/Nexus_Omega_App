@@ -1,30 +1,31 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:nexus_omega_app/model/log.dart';
+import 'package:nexus_omega_app/model/dialogue.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'dev.dart';
+import 'update_dialogue.dart';
 import 'update_log.dart';
 
-class ViewLog extends StatefulWidget {
-  final String logTitle, logTags, logID, logAuthor;
-  final List<String> logContents;
-  const ViewLog(
+class ViewDialogue extends StatefulWidget {
+  final String dialogueTitle, dialogueTags, dialogueID, dialogueAuthor;
+  final List<dynamic> dialogueContents;
+  const ViewDialogue(
       {Key? key,
-      required this.logTitle,
-      required this.logTags,
-      required this.logContents,
-      required this.logID,
-      required this.logAuthor})
+      required this.dialogueTitle,
+      required this.dialogueTags,
+      required this.dialogueContents,
+      required this.dialogueID,
+      required this.dialogueAuthor})
       : super(key: key);
   @override
-  _ViewLogState createState() => _ViewLogState();
+  _ViewDialogueState createState() => _ViewDialogueState();
 }
 
-class _ViewLogState extends State<ViewLog> {
+class _ViewDialogueState extends State<ViewDialogue> {
   late SharedPreferences tokenStore;
   String debug = "";
   int numdeBug = 0;
@@ -33,16 +34,16 @@ class _ViewLogState extends State<ViewLog> {
   String searchString = "";
   late String displayTitle, displayTag;
   late List<String> displayContent;
-  late Log logBuffer;
+  late Dialogue dialogueBuffer;
 
   @override
   void initState() {
     super.initState();
-    logBuffer = new Log(
-        widget.logTitle, widget.logTags, widget.logContents, widget.logAuthor);
-    //displayTitle = widget.logTitle;
-    //displayContent = widget.logContents;
-    //delayedLogin();
+    dialogueBuffer = new Dialogue(widget.dialogueTitle, widget.dialogueTags,
+        widget.dialogueContents, widget.dialogueAuthor);
+    //displayTitle = widget.dialogueTitle;
+    //displayContent = widget.dialogueContents;
+    //delayeddialoguein();
   }
   //
 
@@ -67,19 +68,18 @@ class _ViewLogState extends State<ViewLog> {
         contentSize.toString());
     switch (_selectedChoices) {
       case 'Update':
-        //defocus();
+        defocus();
         await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => new UpdateLog(
-                      logTitle: logBuffer.title,
-                      logTags: logBuffer.tags,
-                      logContents:
-                          logBuffer.content.map((s) => s as String).toList(),
-                      logID: widget.logID.toString(),
-                      logAuthor: logBuffer.author,
+                builder: (context) => new UpdateDialogue(
+                      dialogueTitle: dialogueBuffer.title,
+                      dialogueTags: dialogueBuffer.tags,
+                      dialogueContents: dialogueBuffer.content,
+                      dialogueID: widget.dialogueID.toString(),
+                      dialogueAuthor: dialogueBuffer.author,
                     )));
-        reExtract(widget.logID);
+        reExtract(widget.dialogueID);
         break;
       case 'Modify Title Size':
         disguisedPrompt(
@@ -151,10 +151,10 @@ class _ViewLogState extends State<ViewLog> {
                 }));
         break;
       case 'Delete':
-        deleteLogPrompt(widget.logID, widget.logTitle);
+        deleteDialoguePrompt(widget.dialogueID, widget.dialogueTitle);
         break;
       case 'nukeTest':
-        reExtract(widget.logID);
+        reExtract(widget.dialogueID);
         // NUKE AREA
 
         // disguisedPrompt(
@@ -199,13 +199,13 @@ class _ViewLogState extends State<ViewLog> {
     disguisedToast(
         secDur: 2,
         context: context,
-        message: 'Updating Log',
+        message: 'Updating Dialogue',
         messageStyle: cxTextStyle(style: 'bold', colour: colour('blue')));
     await Future.delayed(Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.get(
-      Uri.parse('https://nexus-omega.herokuapp.com/get/' + id),
+      Uri.parse('https://nexus-omega.herokuapp.com/dialogue/get/' + id),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
@@ -213,7 +213,7 @@ class _ViewLogState extends State<ViewLog> {
     );
     if (response.statusCode == 200) {
       setState(() {
-        logBuffer = new Log.fromJson(json.decode(response.body));
+        dialogueBuffer = new Dialogue.fromJson(json.decode(response.body));
       });
       disguisedToast(
           secDur: 2,
@@ -232,16 +232,16 @@ class _ViewLogState extends State<ViewLog> {
     return (response.statusCode);
   }
 
-  Future<int> deleteLog(String id) async {
+  Future<int> deleteDialogue(String id) async {
     disguisedToast(
         context: context,
-        message: 'Deleting Contact',
+        message: 'Deleting Dialogue',
         messageStyle: cxTextStyle(colour: colour('lred')));
     await Future.delayed(Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.delete(
-      Uri.parse('https://nexus-omega.herokuapp.com/delete/' + id),
+      Uri.parse('https://nexus-omega.herokuapp.com/dialogue/delete/' + id),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
@@ -250,7 +250,7 @@ class _ViewLogState extends State<ViewLog> {
     return (response.statusCode);
   }
 
-  deleteLogPrompt(String id, String title) {
+  deleteDialoguePrompt(String id, String title) {
     flush = disguisedPrompt(
       dismissible: false,
       secDur: 0,
@@ -263,7 +263,7 @@ class _ViewLogState extends State<ViewLog> {
       button1Colour: colour('dgreen'),
       button1Callback: () async {
         flush.dismiss(true);
-        final statusCode = await deleteLog(id);
+        final statusCode = await deleteDialogue(id);
         await Future.delayed(Duration(seconds: 2), () {});
         Navigator.pop(context, statusCode);
       },
@@ -282,7 +282,7 @@ class _ViewLogState extends State<ViewLog> {
       backgroundColor: colour('black'),
       appBar: AppBar(
         backgroundColor: colour('dblue'),
-        title: cText(text: "Logs " /*+ numdeBug.toString()*/),
+        title: cText(text: "Dialogues " /*+ numdeBug.toString()*/),
         actions: [
           SelectionMenu(
             selectables: menu,
@@ -307,7 +307,7 @@ class _ViewLogState extends State<ViewLog> {
                   padding:
                       EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 3),
                   child: Text(
-                    logBuffer.title,
+                    dialogueBuffer.title,
                     style: cxTextStyle(style: 'bold', size: titleSize),
                   ),
                 ),
@@ -317,7 +317,7 @@ class _ViewLogState extends State<ViewLog> {
                 child: Padding(
                   padding: EdgeInsets.only(left: 5, right: 5, bottom: 3),
                   child: Text(
-                    'by: ' + logBuffer.author,
+                    'by: ' + dialogueBuffer.author,
                     style: cxTextStyle(style: 'bold', size: authorIDSize),
                   ),
                 ),
@@ -332,19 +332,21 @@ class _ViewLogState extends State<ViewLog> {
   }
 
   Widget _contentsOfIndex() {
-    List<dynamic> temp = logBuffer.content;
+    List<dynamic> temp = dialogueBuffer.content;
     return ListView.builder(
         shrinkWrap: true,
         itemCount: temp.length,
         physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics()),
-        itemBuilder: (BuildContext context, int contactsIndex) {
+        itemBuilder: (BuildContext context, int index) {
           return Padding(
             padding: EdgeInsets.only(left: 24, bottom: 16, right: 24),
-            child: Text('     ' + temp[contactsIndex],
+            child: Text('     ' + temp[index][1],
                 textAlign: TextAlign.left,
                 style: cxTextStyle(
-                    style: 'bold', colour: colour('white'), size: contentSize)),
+                    style: 'bold',
+                    colour: colour(temp[index][0]),
+                    size: contentSize)),
           );
         });
   }

@@ -1,24 +1,26 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:nexus_omega_app/model/log.dart';
+import 'package:nexus_omega_app/model/dialogue.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:nexus_omega_app/modules/add_new_dialogue.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 
 import 'add_new_log.dart';
 import 'dev.dart';
 import 'login.dart';
+import 'view_dialogues.dart';
 import 'view_log.dart';
 
-class LogList extends StatefulWidget {
+class DialogueList extends StatefulWidget {
   @override
-  _LogListState createState() => _LogListState();
+  _DialogueListState createState() => _DialogueListState();
 }
 
-class _LogListState extends State<LogList> {
+class _DialogueListState extends State<DialogueList> {
   late SharedPreferences tokenStore;
-  List<Log> logsList = [];
+  List<Dialogue> dialoguesList = [];
   String debug = "";
   int numdeBug = 0;
   TextEditingController searchCtrlr = TextEditingController();
@@ -91,10 +93,10 @@ class _LogListState extends State<LogList> {
     await prefSetup().then((value) => {retrievedToken = value!});
     String extractionURL = "";
     if (searchString.isEmpty) {
-      extractionURL = 'https://nexus-omega.herokuapp.com/all';
+      extractionURL = 'https://nexus-omega.herokuapp.com/dialogue/all';
     } else {
       extractionURL =
-          'https://nexus-omega.herokuapp.com/search/' + searchString;
+          'https://nexus-omega.herokuapp.com/dialogue/search/' + searchString;
     }
     final response = await http.get(
       Uri.parse(extractionURL),
@@ -107,12 +109,12 @@ class _LogListState extends State<LogList> {
     if (response.body.toString() == 'Forbidden') {
       rejectAccess();
       setState(() {
-        logsList.clear();
+        dialoguesList.clear();
       });
     } else {
       setState(() {
         Iterable list = json.decode(response.body);
-        logsList = list.map((model) => Log.fromJson(model)).toList();
+        dialoguesList = list.map((model) => Dialogue.fromJson(model)).toList();
       });
     }
     return (response.statusCode);
@@ -130,16 +132,16 @@ class _LogListState extends State<LogList> {
     }
   }
 
-  Future<int> deleteLog(String id) async {
+  Future<int> deleteDialogue(String id) async {
     disguisedToast(
         context: context,
-        message: 'Deleting Log',
+        message: 'Deleting Diadialogueue',
         messageStyle: cxTextStyle(colour: colour('lred')));
     await Future.delayed(Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.delete(
-      Uri.parse('https://nexus-omega.herokuapp.com/delete/' + id),
+      Uri.parse('https://nexus-omega.herokuapp.com/dialogue/delete/' + id),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
@@ -148,7 +150,7 @@ class _LogListState extends State<LogList> {
     return (response.statusCode);
   }
 
-  deleteLogPrompt(String id, String title) {
+  deleteDialoguePrompt(String id, String title) {
     flush = disguisedPrompt(
       dismissible: false,
       secDur: 0,
@@ -161,10 +163,10 @@ class _LogListState extends State<LogList> {
       button1Colour: colour('dgreen'),
       button1Callback: () async {
         flush.dismiss(true);
-        final statusCode = await deleteLog(id);
+        final statusCode = await deleteDialogue(id);
         await Future.delayed(Duration(seconds: 2), () {});
         if (statusCode == 200) {
-          logsList.clear();
+          dialoguesList.clear();
         }
         statusCodeEval(statusCode);
       },
@@ -186,7 +188,7 @@ class _LogListState extends State<LogList> {
       backgroundColor: colour('black'),
       appBar: AppBar(
         backgroundColor: colour('dblue'),
-        title: cText(text: "Logs " /*+ numdeBug.toString()*/),
+        title: cText(text: "Dialogues " /*+ numdeBug.toString()*/),
         actions: [
           SelectionMenu(
             selectables: menu,
@@ -241,8 +243,9 @@ class _LogListState extends State<LogList> {
                 height: double.infinity,
                 width: double.infinity,
                 color: Colors.black,
-                child: FutureBuilder<List<Log>>(builder: (context, snapshot) {
-                  return logsList.length != 0
+                child:
+                    FutureBuilder<List<Dialogue>>(builder: (context, snapshot) {
+                  return dialoguesList.length != 0
                       ? RefreshIndicator(
                           child: new SingleChildScrollView(
                               padding: EdgeInsets.only(bottom: 100),
@@ -252,7 +255,7 @@ class _LogListState extends State<LogList> {
                                   key: UniqueKey(),
                                   padding:
                                       EdgeInsetsDirectional.all(10), // MARK
-                                  itemCount: logsList.length,
+                                  itemCount: dialoguesList.length,
                                   physics: NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemBuilder:
@@ -261,8 +264,9 @@ class _LogListState extends State<LogList> {
                                         direction: DismissDirection.horizontal,
                                         onDismissed: (direction) async {
                                           // >>>>>>>>>>>>>>>>>>>>>>>>>>>> DELETE ON DISMISS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                                          deleteLogPrompt(logsList[index].id,
-                                              logsList[index].title);
+                                          deleteDialoguePrompt(
+                                              dialoguesList[index].id,
+                                              dialoguesList[index].title);
                                         },
                                         key: UniqueKey(),
                                         child: GestureDetector(
@@ -272,29 +276,30 @@ class _LogListState extends State<LogList> {
                                                   await Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
-                                                          builder:
-                                                              (context) =>
-                                                                  new ViewLog(
-                                                                    logTitle: logsList[
+                                                          builder: (context) =>
+                                                              new ViewDialogue(
+                                                                dialogueTitle:
+                                                                    dialoguesList[
                                                                             index]
                                                                         .title,
-                                                                    logTags: logsList[
+                                                                dialogueTags:
+                                                                    dialoguesList[
                                                                             index]
                                                                         .tags,
-                                                                    logContents: logsList[
+                                                                dialogueContents:
+                                                                    dialoguesList[
                                                                             index]
-                                                                        .content
-                                                                        .map((s) =>
-                                                                            s as String)
-                                                                        .toList(),
-                                                                    logID: logsList[
+                                                                        .content,
+                                                                dialogueID:
+                                                                    dialoguesList[
                                                                             index]
                                                                         .id
                                                                         .toString(),
-                                                                    logAuthor: logsList[
+                                                                dialogueAuthor:
+                                                                    dialoguesList[
                                                                             index]
                                                                         .author,
-                                                                  )));
+                                                              )));
                                               statusCodeEval(statusCode);
                                             },
                                             child: Card(
@@ -310,7 +315,8 @@ class _LogListState extends State<LogList> {
                                                 children: <Widget>[
                                                   ListTile(
                                                     title: Text(
-                                                        logsList[index].title,
+                                                        dialoguesList[index]
+                                                            .title,
                                                         style: cxTextStyle(
                                                             style: 'bold',
                                                             size: 24,
@@ -331,11 +337,15 @@ class _LogListState extends State<LogList> {
                                                       ),
                                                       child: Text(
                                                         'by: ' +
-                                                            logsList[index]
+                                                            dialoguesList[index]
                                                                 .author +
                                                             '\n  ' +
-                                                            logsList[index]
+                                                            dialoguesList[index]
                                                                 .tags,
+                                                        // '\n  ' +
+                                                        // dialoguesList[index]
+                                                        //     .content[0][1]
+                                                        //     .toString(),
                                                         style: cxTextStyle(
                                                           style: 'normal',
                                                           size: 16,
@@ -386,7 +396,7 @@ class _LogListState extends State<LogList> {
                 final statusCode = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => new CreateNewLog()));
+                        builder: (context) => new CreateNewDialogue()));
                 await Future.delayed(Duration(seconds: 2), () {});
                 statusCodeEval(statusCode);
               } else {
@@ -414,7 +424,7 @@ class _LogListState extends State<LogList> {
   Future<void> reloadList() async {
     setState(() {
       searchString = searchCtrlr.text;
-      logsList.clear();
+      dialoguesList.clear();
     });
     //disguisedToast(context: context, message: "Reloading...");
     extractData();

@@ -3,28 +3,29 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:nexus_omega_app/model/dialogue.dart';
 import 'package:nexus_omega_app/model/log.dart';
 import 'dev.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 
-class UpdateLog extends StatefulWidget {
-  final String logTitle, logTags, logID, logAuthor;
-  final List<String> logContents;
-  const UpdateLog({
+class UpdateDialogue extends StatefulWidget {
+  final String dialogueTitle, dialogueTags, dialogueID, dialogueAuthor;
+  final List<dynamic> dialogueContents;
+  const UpdateDialogue({
     Key? key,
-    required this.logTitle,
-    required this.logTags,
-    required this.logContents,
-    required this.logID,
-    required this.logAuthor,
+    required this.dialogueTitle,
+    required this.dialogueTags,
+    required this.dialogueContents,
+    required this.dialogueID,
+    required this.dialogueAuthor,
     /*CONTACTS*/
   }) : super(key: key);
   @override
-  _UpdateLogState createState() => _UpdateLogState();
+  _UpdateDialogueState createState() => _UpdateDialogueState();
 }
 
-class _UpdateLogState extends State<UpdateLog> {
+class _UpdateDialogueState extends State<UpdateDialogue> {
   int key = 0, increments = 0, listSize = 1, _count = 1;
   late SharedPreferences tokenStore;
 
@@ -36,20 +37,55 @@ class _UpdateLogState extends State<UpdateLog> {
     TextEditingController()
   ];
 
-  late Log previousLog, updatedLog;
-  String logIdentifier = '';
-  late Flushbar flush;
+  List<String> colours = <String>[];
 
-  Future<int> deleteLog(String id) async {
+  late Dialogue previousDialogue, updatedDialogue;
+  String dialogueIdentifier = '';
+  late Flushbar flush;
+  List<PopupItem> menu = [
+    PopupItem(1, 'red'),
+    PopupItem(2, 'orange'),
+    PopupItem(3, 'yellow'),
+    PopupItem(4, 'green'),
+    PopupItem(4, 'blue'),
+    PopupItem(5, 'violet'),
+    PopupItem(6, 'pink'),
+    PopupItem(7, 'grey'),
+    PopupItem(8, 'cyan'),
+    PopupItem(8, 'white'),
+    // PopupItem(
+    //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
+  ];
+  String _selectedChoices = "none";
+  Future<void> _select(String choice) async {
+    setState(() {
+      _selectedChoices = choice;
+    });
+    print(authorIDSize.toString() +
+        ' / ' +
+        titleSize.toString() +
+        ' / ' +
+        contentSize.toString());
+    switch (_selectedChoices) {
+      case 'Update':
+        break;
+      default:
+        print(_selectedChoices);
+        _selectedChoices = "none";
+        print(_selectedChoices);
+    }
+  }
+
+  Future<int> deleteDialogue(String id) async {
     disguisedToast(
         context: context,
-        message: 'Deleting Log',
+        message: 'Deleting Dialogue',
         messageStyle: cxTextStyle(colour: colour('lred')));
     await Future.delayed(Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.delete(
-      Uri.parse('https://nexus-omega.herokuapp.com/delete/' + id),
+      Uri.parse('https://nexus-omega.herokuapp.com/dialouge/delete/' + id),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
@@ -58,7 +94,7 @@ class _UpdateLogState extends State<UpdateLog> {
     return (response.statusCode);
   }
 
-  deleteLogPrompt(String id, String title) {
+  deleteDialoguePrompt(String id, String title) {
     flush = disguisedPrompt(
       dismissible: false,
       secDur: 0,
@@ -71,7 +107,7 @@ class _UpdateLogState extends State<UpdateLog> {
       button1Colour: colour('dgreen'),
       button1Callback: () async {
         flush.dismiss(true);
-        final statusCode = await deleteLog(id);
+        final statusCode = await deleteDialogue(id);
         await Future.delayed(Duration(seconds: 2), () {});
         Navigator.pop(context, statusCode);
       },
@@ -88,7 +124,7 @@ class _UpdateLogState extends State<UpdateLog> {
     String retrievedToken = '';
     disguisedToast(
         context: context,
-        title: 'Updating Log',
+        title: 'Updating Dialogue',
         titleStyle: cxTextStyle(
           style: 'bold',
           colour: colour('blue'),
@@ -99,7 +135,7 @@ class _UpdateLogState extends State<UpdateLog> {
     //await Future.delayed(Duration(seconds: 3), () {});
     await prefSetup().then((value) => {retrievedToken = value!});
     final response = await http.patch(
-      Uri.parse('https://nexus-omega.herokuapp.com/update/' + id),
+      Uri.parse('https://nexus-omega.herokuapp.com/dialogue/update/' + id),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
@@ -155,28 +191,40 @@ class _UpdateLogState extends State<UpdateLog> {
   void saveContact() async {
     int statusCode = 0;
     bool emptyDetect = false;
-    List<String> listedContent = <String>[];
+    List<List<String>> listedContent = <List<String>>[];
+    List<String> subContent = <String>[];
     for (int i = 0; i < _count; i++) {
-      listedContent.add(contentsCtrlr[i].text);
+      //print(colours[(_count - i - 1)]);
+      subContent.add(colours[(_count - i - 1)]);
+      subContent.add(contentsCtrlr[i].text);
+      //print(subContent);
+      listedContent.add(subContent.toList());
+      //print(listedContent);
+
+      subContent.clear();
       if (contentsCtrlr[i].text.isEmpty) {
         emptyDetect = true;
       }
     }
+    print(listedContent.reversed);
     setState(() {
-      updatedLog = new Log(titleCtrlr.text, tagsCtrlr.text,
+      updatedDialogue = new Dialogue(titleCtrlr.text, tagsCtrlr.text,
           listedContent.reversed.toList(), authorCtrlr.text);
     });
-    if (updatedLog.title.isEmpty || updatedLog.tags.isEmpty) {
+    print(subContent.reversed);
+
+    //print(updatedDialogue.toJson());
+    if (updatedDialogue.title.isEmpty || updatedDialogue.tags.isEmpty) {
       emptyDetect = true;
     }
 
     if (!emptyDetect) {
       statusCode = await uploadUpdated(
-        updatedLog.title,
-        updatedLog.tags,
+        updatedDialogue.title,
+        updatedDialogue.tags,
         listedContent.reversed.toList(),
-        logIdentifier,
-        updatedLog.author,
+        dialogueIdentifier,
+        updatedDialogue.author,
       );
     } else {
       disguisedToast(
@@ -195,9 +243,9 @@ class _UpdateLogState extends State<UpdateLog> {
     super.initState();
     setState(() {
       _count = 0;
-      previousLog = new Log(widget.logTitle, widget.logTags, widget.logContents,
-          widget.logAuthor);
-      logIdentifier = widget.logID;
+      previousDialogue = new Dialogue(widget.dialogueTitle, widget.dialogueTags,
+          widget.dialogueContents, widget.dialogueAuthor);
+      dialogueIdentifier = widget.dialogueID;
       resetCtrlrFields();
     });
   }
@@ -211,21 +259,21 @@ class _UpdateLogState extends State<UpdateLog> {
       titleCtrlr.clear();
       tagsCtrlr.clear();
       contentsCtrlr.clear();
+      colours.clear();
       contentsCtrlr = <TextEditingController>[TextEditingController()];
-      titleCtrlr = TextEditingController(text: previousLog.title);
-      tagsCtrlr = TextEditingController(text: previousLog.tags);
-      authorCtrlr = TextEditingController(text: previousLog.author);
-      List<String> contactsToDisplay = <String>[];
-      contactsToDisplay.clear();
-      final int edge = previousLog.content.length;
+      titleCtrlr = TextEditingController(text: previousDialogue.title);
+      tagsCtrlr = TextEditingController(text: previousDialogue.tags);
+      authorCtrlr = TextEditingController(text: previousDialogue.author);
+      final int edge = previousDialogue.content.length;
       for (int i = 0; i < edge; i++) {
-        contactsToDisplay.add(previousLog.content[i]);
         if (i < edge) {
           contentsCtrlr.insert(
-              0, TextEditingController(text: previousLog.content[i]));
+              0, TextEditingController(text: previousDialogue.content[i][1]));
+          colours.add(previousDialogue.content[i][0]);
         }
+
         _count++;
-        listSize = previousLog.content.length;
+        listSize = previousDialogue.content.length;
       }
     });
   }
@@ -241,39 +289,13 @@ class _UpdateLogState extends State<UpdateLog> {
         backgroundColor: colour('black'),
         appBar: AppBar(
           centerTitle: true,
-          title: cText(text: "Update Log", colour: colour('')),
+          title: cText(text: "Update Dialogue", colour: colour('')),
           actions: [
             IconButton(
               icon: Icon(Icons.clear),
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
-                setState(() {
-                  key = 0;
-                  increments = 0;
-                  listSize = 1;
-                  _count = 0;
-                  titleCtrlr.clear();
-                  tagsCtrlr.clear();
-                  contentsCtrlr.clear();
-                  contentsCtrlr = <TextEditingController>[
-                    TextEditingController()
-                  ];
-                  titleCtrlr = TextEditingController(text: previousLog.title);
-                  tagsCtrlr = TextEditingController(text: previousLog.tags);
-                  authorCtrlr = TextEditingController(text: previousLog.author);
-                  List<String> contactsToDisplay = <String>[];
-                  contactsToDisplay.clear();
-                  final int edge = previousLog.content.length;
-                  for (int i = 0; i < edge; i++) {
-                    contactsToDisplay.add(previousLog.content[i]);
-                    if (i < edge) {
-                      contentsCtrlr.insert(0,
-                          TextEditingController(text: previousLog.content[i]));
-                    }
-                    _count++;
-                    listSize = widget.logContents.length;
-                  }
-                });
+                resetCtrlrFields();
               },
             )
           ],
@@ -287,7 +309,7 @@ class _UpdateLogState extends State<UpdateLog> {
               children: [
                 ctrlrField(
                     context: context,
-                    fieldPrompt: "First Name",
+                    fieldPrompt: "Title",
                     ctrlrID: titleCtrlr,
                     defaultColor: colour(''),
                     selectedColor: colour('sel'),
@@ -306,7 +328,7 @@ class _UpdateLogState extends State<UpdateLog> {
                 hfill(10),
                 ctrlrField(
                     context: context,
-                    fieldPrompt: "Last Name",
+                    fieldPrompt: "Tags",
                     ctrlrID: tagsCtrlr,
                     defaultColor: colour(''),
                     selectedColor: colour('sel'),
@@ -341,7 +363,7 @@ class _UpdateLogState extends State<UpdateLog> {
             FAB(
                 onPressed: () async {
                   // >>>>>>>>>>>>>>>>>>>>>>>>>>>> DELETE BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                  deleteLogPrompt(logIdentifier, titleCtrlr.text);
+                  deleteDialoguePrompt(dialogueIdentifier, titleCtrlr.text);
                 },
                 icon: Icon(Icons.delete_forever),
                 text: "Delete",
@@ -355,6 +377,7 @@ class _UpdateLogState extends State<UpdateLog> {
                   increments++;
                   listSize++;
                   contentsCtrlr.insert(0, TextEditingController());
+                  colours.add('white');
                 });
               },
               icon: Icon(Icons.add),
@@ -376,7 +399,17 @@ class _UpdateLogState extends State<UpdateLog> {
         persistentFooterButtons: <Widget>[]);
   }
 
+  colorSelect() {
+    disguisedToast(
+        context: context,
+        title: 'Select Colour',
+        message: 'Touch to Toggle',
+        callback: () => doNoting());
+  }
+
   _contentInput(int index, context) {
+    //print(contentColours[index]);
+    Color currentColor = colour(colours[_count - index - 1]);
     return Column(children: <Widget>[
       Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,12 +422,33 @@ class _UpdateLogState extends State<UpdateLog> {
               child: _removeButton(index),
             ),
           ),
+          popUpMenu(
+            selectables: menu,
+            onSelection: (value) {
+              setState(() {
+                currentColor = colour(value);
+                colours[_count - index - 1] = value;
+              });
+            },
+            icon: Icon(Icons.color_lens, color: currentColor),
+            backgroundColour: colour('black'),
+            borderColour: currentColor,
+            buttonColour: colour('black'),
+            popupColour: colour('black'),
+            fontSize: 15,
+          ),
+          /*
+          cxIconButton(
+            onPressed: () => colorSelect(),
+            icon: Icon(Icons.color_lens, color: currentColor),
+            borderColour: currentColor,
+          ),*/
           Expanded(
             child: ctrlrField(
               context: context,
               fieldPrompt: "Par #" + (_count - index).toString(),
               ctrlrID: contentsCtrlr[index],
-              defaultColor: colour(''),
+              defaultColor: currentColor,
               selectedColor: colour('sel'),
               next: true,
               autoFocus: false,
@@ -428,6 +482,7 @@ class _UpdateLogState extends State<UpdateLog> {
             increments--;
             listSize--;
             contentsCtrlr.removeAt(index);
+            colours.removeAt(_count - index);
           });
         }
       },

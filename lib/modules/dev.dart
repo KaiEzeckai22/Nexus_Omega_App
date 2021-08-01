@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -16,7 +17,9 @@ import 'package:another_flushbar/flushbar.dart';
 //import 'package:flushbar/flushbar_helper.dart';
 //import 'dart:async';
 
-double contentSize = 14, titleSize = 40;
+double contentSize = 20, titleSize = 37, authorIDSize = 13;
+
+doNoting() {}
 
 Color colour(String? colour) {
   switch (colour) {
@@ -25,7 +28,7 @@ Color colour(String? colour) {
     case ('lred'):
       return Colors.red;
     case ('red'):
-      return Color(0xff801010);
+      return Color(0xffcc1c10);
     case ('dred'):
       return Color(0xff500000);
     case ('orange'):
@@ -33,11 +36,17 @@ Color colour(String? colour) {
     case ('yellow'):
       return Colors.yellow;
     case ('green'):
-      return Colors.green;
+      return Color(0xff00f006);
+    case ('dgreen'):
+      return Color(0xff008000);
     case ('lblue'):
       return Colors.lightBlue;
     case ('blue'):
       return Colors.blue;
+    case ('violet'):
+      return Color(0xff8866ff);
+    case ('cyan'):
+      return Color(0xff07cdf8);
     case ('dblue'):
       return Color(0xff01579b);
     case ('lred'):
@@ -224,6 +233,66 @@ class SelectionMenu extends StatelessWidget {
   }
 }
 
+SizedBox popUpMenu({
+  required Function(String) onSelection,
+  required List<PopupItem> selectables,
+  String? text,
+  TextStyle? textStyle,
+  Color? buttonColour,
+  Icon? icon,
+  Color? iconColour,
+  backgroundColour,
+  borderColour,
+  popupColour,
+  double? height,
+  width,
+  fontSize,
+}) {
+  return SizedBox(
+      height: (height != null) ? height : 50,
+      width: (width != null) ? width : 50,
+      child: Card(
+          color: (backgroundColour != null) ? backgroundColour : Colors.black45,
+          shape: ContinuousRectangleBorder(
+              side: BorderSide(
+                  color: (borderColour != null) ? borderColour : Colors.white,
+                  width: 1.5),
+              borderRadius: BorderRadius.circular(10)),
+          child: PopupMenuButton(
+              shape: ContinuousRectangleBorder(
+                  side: BorderSide(
+                      color:
+                          (borderColour != null) ? borderColour : Colors.white,
+                      width: 1.5),
+                  borderRadius: BorderRadius.circular(10)),
+              color: (popupColour != null) ? popupColour : Colors.black45,
+              elevation: 20,
+              enabled: true,
+              icon: (icon != null)
+                  ? icon
+                  : Icon(
+                      Icons.settings,
+                      color: (iconColour != null) ? iconColour : colour(''),
+                    ),
+              enableFeedback: true,
+              onSelected: (value) {
+                //defocus();
+                onSelection(value.toString());
+              },
+              itemBuilder: (context) {
+                return selectables.map((PopupItem choice) {
+                  return PopupMenuItem(
+                    value: choice.name,
+                    child: Text(
+                      choice.name.toUpperCase(),
+                      style: cxTextStyle(
+                          style: 'bold', colour: colour(choice.name), size: 20),
+                    ),
+                  );
+                }).toList();
+              })));
+}
+
 class FAB extends StatelessWidget {
   final VoidCallback onPressed;
   final Icon? icon;
@@ -282,30 +351,35 @@ TextButton cxTextButton({
   );
 }
 
-Card cxIconButton({
+SizedBox cxIconButton({
   required VoidCallback onPressed,
   Icon? icon,
   Color? buttonColour,
   Color? backgroundColour,
   Color? borderColour,
+  double? height,
+  double? width,
 }) {
-  return Card(
-    color: (backgroundColour != null) ? buttonColour : Colors.black45,
-    shape: ContinuousRectangleBorder(
-        side: BorderSide(
-            color: (borderColour != null) ? borderColour : Colors.white,
-            width: 1.5),
-        borderRadius: BorderRadius.circular(10)),
-    child: IconButton(
-      onPressed: () {
-        // >>>>>>>>>>>>>>>>>>>>>>>>>>>> CALLBACK BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        defocus();
-        onPressed();
-      },
-      icon: (icon != null) ? icon : Icon(Icons.warning),
-      color: (buttonColour != null) ? buttonColour : Colors.white,
-    ),
-  );
+  return SizedBox(
+      height: (height != null) ? height : 50,
+      width: (width != null) ? width : 50,
+      child: Card(
+        color: (backgroundColour != null) ? backgroundColour : Colors.black45,
+        shape: ContinuousRectangleBorder(
+            side: BorderSide(
+                color: (borderColour != null) ? borderColour : Colors.white,
+                width: 1.5),
+            borderRadius: BorderRadius.circular(10)),
+        child: IconButton(
+          onPressed: () {
+            // >>>>>>>>>>>>>>>>>>>>>>>>>>>> CALLBACK BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+            defocus();
+            onPressed();
+          },
+          icon: (icon != null) ? icon : Icon(Icons.warning),
+          color: (buttonColour != null) ? buttonColour : Colors.black45,
+        ),
+      ));
 }
 
 void debugToast(context) {

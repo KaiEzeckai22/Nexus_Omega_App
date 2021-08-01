@@ -18,6 +18,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
 
   final titleCtrlr = TextEditingController();
   final tagsCtrlr = TextEditingController();
+  final authorCtrlr = TextEditingController();
 
   List<FocusNode> nodes = <FocusNode>[FocusNode()];
 
@@ -28,7 +29,8 @@ class _CreateNewLogState extends State<CreateNewLog> {
   late Log newLog;
   late SharedPreferences tokenStore;
 
-  Future<int> uploadContact(String title, String tags, List content) async {
+  Future<int> uploadLog(
+      String title, String tags, List content, String author) async {
     String retrievedToken = '';
     disguisedToast(
         context: context,
@@ -51,6 +53,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
         'title': title,
         'tags': tags,
         'content': content,
+        'author': author,
       }),
     );
     if (response.statusCode == 200) {
@@ -64,7 +67,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
           message: "Would you like to add another?",
           messageStyle: cxTextStyle(size: 14),
           button1Name: 'Yes',
-          button1Colour: colour('green'),
+          button1Colour: colour('dgreen'),
           button1Callback: () async {
             flush.dismiss(true);
             resetAllFields();
@@ -76,6 +79,11 @@ class _CreateNewLogState extends State<CreateNewLog> {
             //s await Future.delayed(Duration(seconds: 2), () {});
             Navigator.pop(context, response.statusCode);
           });
+    } else {
+      disguisedToast(
+          context: context,
+          message: 'ERROR ' + response.statusCode.toString(),
+          messageStyle: cxTextStyle(style: 'bold', colour: colour('red')));
     }
     return (response.statusCode);
   }
@@ -95,19 +103,16 @@ class _CreateNewLogState extends State<CreateNewLog> {
       }
     }
     setState(() {
-      newLog =
-          Log(titleCtrlr.text, tagsCtrlr.text, listedContent.reversed.toList());
+      newLog = Log(titleCtrlr.text, tagsCtrlr.text,
+          listedContent.reversed.toList(), authorCtrlr.text);
     });
     if (newLog.title.isEmpty || newLog.tags.isEmpty) {
       emptyDetect = true;
     }
 
     if (!emptyDetect) {
-      await uploadContact(
-        newLog.title,
-        newLog.tags,
-        listedContent.reversed.toList(),
-      );
+      await uploadLog(newLog.title, newLog.tags,
+          listedContent.reversed.toList(), newLog.author);
     } else {
       disguisedToast(
         context: context,
@@ -154,26 +159,13 @@ class _CreateNewLogState extends State<CreateNewLog> {
       backgroundColor: colour('black'),
       appBar: AppBar(
         centerTitle: true,
-        title: cText(text: "Log Entry", colour: colour('')),
+        title: cText(text: "New Log Entry", colour: colour('')),
         actions: [
           IconButton(
             icon: Icon(Icons.undo),
             onPressed: () async {
               FocusManager.instance.primaryFocus?.unfocus();
-              setState(() {
-                key = 0;
-                increments = 0;
-                listSize = 1;
-                _count = 1;
-                titleCtrlr.clear();
-                tagsCtrlr.clear();
-                contentsCtrlr.clear();
-                contentsCtrlr = <TextEditingController>[
-                  TextEditingController()
-                ];
-                nodes.clear();
-                nodes = <FocusNode>[FocusNode()];
-              });
+              resetAllFields();
             },
           )
         ],
@@ -185,11 +177,21 @@ class _CreateNewLogState extends State<CreateNewLog> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              // >>>>>>>>>>>>>>>>>>>>>>>>>>>> NAME ENTRY FIELDS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+              // >>>>>>>>>>>>>>>>>>>>>>>>>>>> ENTRY FIELDS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
               ctrlrField(
                   context: context,
                   fieldPrompt: "Title",
                   ctrlrID: titleCtrlr,
+                  defaultColor: colour(''),
+                  selectedColor: colour('sel'),
+                  errorColor: Colors.red,
+                  next: true,
+                  autoFocus: true),
+              hfill(10),
+              ctrlrField(
+                  context: context,
+                  fieldPrompt: "Author",
+                  ctrlrID: authorCtrlr,
                   defaultColor: colour(''),
                   selectedColor: colour('sel'),
                   errorColor: Colors.red,
@@ -205,9 +207,6 @@ class _CreateNewLogState extends State<CreateNewLog> {
                   errorColor: Colors.red,
                   next: true,
                   autoFocus: true),
-              /*
-              ctrlrField(context, "Last Name", tagsCtrlr, colour('sel'),
-                  colour('def'), Colors.red, null, false, true, true),*/
               hfill(10),
               Container(
                 alignment: Alignment.centerRight,
@@ -223,7 +222,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
                     shrinkWrap: true,
                     itemCount: _count,
                     itemBuilder: (context, index) {
-                      return _contactsInput(index, context);
+                      return _contentInput(index, context);
                     }),
               ),
               hfill(45),
@@ -265,7 +264,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
     );
   }
 
-  _contactsInput(int index, context) {
+  _contentInput(int index, context) {
     return Column(children: <Widget>[
       Row(
         crossAxisAlignment: CrossAxisAlignment.start,

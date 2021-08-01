@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nexus_omega_app/model/log.dart';
 import 'dart:convert';
@@ -40,6 +39,7 @@ class _LogListState extends State<LogList> {
     setState(() {
       _selectedChoices = choice;
     });
+    defocus();
     switch (_selectedChoices) {
       case 'Log-in':
         loginTrigger();
@@ -387,23 +387,6 @@ class _LogListState extends State<LogList> {
         ],
       ),
     );
-  }
-
-  Widget _contentsOfIndex(int index) {
-    List<String> temp = logsList[index].content.cast<String>();
-    return ListView.builder(
-        shrinkWrap: true,
-        itemCount: temp.length,
-        physics: NeverScrollableScrollPhysics(),
-        itemBuilder: (BuildContext context, int contactsIndex) {
-          return Padding(
-            padding: EdgeInsets.only(left: 24, bottom: 16),
-            child: Text(temp[contactsIndex],
-                textAlign: TextAlign.left,
-                style: cxTextStyle(
-                    style: 'bold', colour: colour('white'), size: 15)),
-          );
-        });
   }
 
   @override

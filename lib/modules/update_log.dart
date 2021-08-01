@@ -82,7 +82,7 @@ class _UpdateLogState extends State<UpdateLog> {
   }
 
   Future<int> uploadUpdated(
-      String firstName, String lastName, List contactNumbers, String id) async {
+      String title, String tags, List content, String id) async {
     String retrievedToken = '';
     disguisedToast(
         context: context,
@@ -91,12 +91,7 @@ class _UpdateLogState extends State<UpdateLog> {
           style: 'bold',
           colour: colour('blue'),
         ),
-        message: 'First Name: ' +
-            firstName +
-            '\n Last Name: ' +
-            lastName +
-            '\n Contacts : ' +
-            contactNumbers.toString(),
+        message: 'Title: ' + title + '\n Tags: ' + tags,
         messageStyle: cxTextStyle(size: 15),
         secDur: 2);
     //await Future.delayed(Duration(seconds: 3), () {});
@@ -108,9 +103,9 @@ class _UpdateLogState extends State<UpdateLog> {
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
       },
       body: jsonEncode({
-        'title': firstName,
-        'tags': lastName,
-        'content': contactNumbers,
+        'title': title,
+        'tags': tags,
+        'content': content,
       }),
     );
     //print(response.body);
@@ -381,7 +376,7 @@ class _UpdateLogState extends State<UpdateLog> {
               defaultColor: colour(''),
               selectedColor: colour('sel'),
               next: true,
-              autoFocus: true,
+              autoFocus: false,
               inputType: TextInputType.multiline,
               maxLines: null,
               onSubmit: () => {

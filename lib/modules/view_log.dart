@@ -6,9 +6,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
-
 import 'dev.dart';
-import 'login.dart';
 import 'update_log.dart';
 
 class ViewLog extends StatefulWidget {
@@ -39,19 +37,20 @@ class _ViewLogState extends State<ViewLog> {
   @override
   void initState() {
     super.initState();
-    displayTitle = widget.logTitle;
-    displayContent = widget.logContents;
+    logBuffer = new Log(widget.logTitle, widget.logTags, widget.logContents);
+    //displayTitle = widget.logTitle;
+    //displayContent = widget.logContents;
     //delayedLogin();
   }
   //
 
   List<PopupItem> menu = [
-    PopupItem(1, "Update"),
-    PopupItem(2, "Delete"),
-    //PopupItem(3, "DevTest-sp"),
-    //PopupItem(4, "DevTest-sb"),
-    //PopupItem(5, "DevTest-newGet"),
-    //PopupItem(0, "nukeTest"), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
+    PopupItem(1, 'Update'),
+    PopupItem(2, 'Delete'),
+    PopupItem(3, 'Modify Title Size'),
+    PopupItem(4, 'Modify Content Size'),
+    PopupItem(
+        0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
   ];
   String _selectedChoices = "none";
   Future<void> _select(String choice) async {
@@ -60,40 +59,89 @@ class _ViewLogState extends State<ViewLog> {
     });
     switch (_selectedChoices) {
       case 'Update':
+        //defocus();
         await Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => new UpdateLog(
-                      logTitle: widget.logTitle,
-                      logTags: widget.logTags,
+                      logTitle: logBuffer.title,
+                      logTags: logBuffer.tags,
                       logContents:
-                          widget.logContents.map((s) => s as String).toList(),
+                          logBuffer.content.map((s) => s as String).toList(),
                       logID: widget.logID.toString(),
                     )));
         reExtract(widget.logID);
         break;
+      case 'Modify Title Size':
+        disguisedPrompt(
+            context: context,
+            secDur: 0,
+            closeAfter: false,
+            dismissible: true,
+            title: 'Modify Title Size',
+            titleStyle: cxTextStyle(style: 'bold'),
+            message: '(Slide to CLOSE menu)',
+            messageStyle: cxTextStyle(style: 'italic', size: 16),
+            button1Name: '+',
+            button1Colour: colour('green'),
+            button1Callback: () => setState(() {
+                  titleSize++;
+                }),
+            button2Name: '-',
+            button2Colour: colour('red'),
+            button2Callback: () => setState(() {
+                  if (titleSize > 12) {
+                    titleSize--;
+                  }
+                }));
+        break;
+      case 'Modify Content Size':
+        disguisedPrompt(
+            context: context,
+            secDur: 0,
+            closeAfter: false,
+            dismissible: true,
+            title: 'Modify Content Size',
+            titleStyle: cxTextStyle(style: 'bold'),
+            message: '(Slide to CLOSE menu)',
+            messageStyle: cxTextStyle(style: 'italic', size: 16),
+            button1Name: '+',
+            button1Colour: colour('green'),
+            button1Callback: () => setState(() {
+                  contentSize++;
+                }),
+            button2Name: '-',
+            button2Colour: colour('red'),
+            button2Callback: () => setState(() {
+                  if (titleSize > 12) {
+                    contentSize--;
+                  }
+                }));
+        break;
       case 'Delete':
         break;
       case 'nukeTest':
+        reExtract(widget.logID);
         // NUKE AREA
-        disguisedPrompt(
-            context: context,
-            title: 'Confirm Delete',
-            titleStyle: cxTextStyle(style: 'bold'),
-            message: '   Would you like\n   to proceed?',
-            messageStyle: cxTextStyle(style: 'italic', size: 16),
-            button1Name: 'Yes',
-            button1Colour: colour('green'),
-            button1Callback: () => setState(() {
-                  numdeBug++;
-                  print(numdeBug);
-                }),
-            button2Name: 'No',
-            button2Colour: colour('red'),
-            button2Callback: () => setState(() {
-                  numdeBug--;
-                  print(numdeBug);
-                }));
+
+        // disguisedPrompt(
+        //     context: context,
+        //     title: 'Confirm Delete',
+        //     titleStyle: cxTextStyle(style: 'bold'),
+        //     message: '   Would you like\n   to proceed?',
+        //     messageStyle: cxTextStyle(style: 'italic', size: 16),
+        //     button1Name: 'Yes',
+        //     button1Colour: colour('green'),
+        //     button1Callback: () => setState(() {
+        //           numdeBug++;
+        //           print(numdeBug);
+        //         }),
+        //     button2Name: 'No',
+        //     button2Colour: colour('red'),
+        //     button2Callback: () => setState(() {
+        //           numdeBug--;
+        //           print(numdeBug);
+        //         }));
         break;
       default:
         print(_selectedChoices);
@@ -116,9 +164,10 @@ class _ViewLogState extends State<ViewLog> {
 
   Future<int> reExtract(String id) async {
     disguisedToast(
+        secDur: 2,
         context: context,
         message: 'Updating Log',
-        messageStyle: cxTextStyle(colour: colour('lred')));
+        messageStyle: cxTextStyle(style: 'bold', colour: colour('blue')));
     await Future.delayed(Duration(seconds: 2), () {});
     String retrievedToken = '';
     await prefSetup().then((value) => {retrievedToken = value!});
@@ -129,9 +178,24 @@ class _ViewLogState extends State<ViewLog> {
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
       },
     );
-    setState(() {
-      logBuffer = json.decode(response.body);
-    });
+    if (response.statusCode == 200) {
+      setState(() {
+        logBuffer = new Log.fromJson(json.decode(response.body));
+      });
+      disguisedToast(
+          secDur: 2,
+          context: context,
+          message: 'Update Successful',
+          messageStyle: cxTextStyle(style: 'bold', colour: colour('green')));
+    } else {
+      disguisedToast(
+          secDur: 5,
+          context: context,
+          message:
+              'Something Happened: [' + response.statusCode.toString() + ']',
+          messageStyle: cxTextStyle(style: 'bold', colour: colour('lred')));
+    }
+
     return (response.statusCode);
   }
 
@@ -207,8 +271,8 @@ class _ViewLogState extends State<ViewLog> {
             child: Padding(
               padding: EdgeInsets.all(15),
               child: Text(
-                displayTitle,
-                style: cxTextStyle(style: 'bold', size: 40),
+                logBuffer.title,
+                style: cxTextStyle(style: 'bold', size: titleSize),
               ),
             ),
           ),
@@ -216,50 +280,11 @@ class _ViewLogState extends State<ViewLog> {
         ],
       ),
       persistentFooterButtons: <Widget>[hfill(25)],
-      /*
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          FAB(
-            onPressed: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-              reloadList();
-            },
-            icon: Icon(Icons.refresh),
-            text: "Refresh",
-            background: colour('dblue'),
-          ),
-          vfill(12),
-          FAB(
-            onPressed: () async {
-              // >>>>>>>>>>>>>>>>>>>>>>>>>>>> PUSH TO ADD SCREEN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-              /*print((tokenStore.getString('token').toString().isNotEmpty &&
-                  tokenStore.getString('token').toString() != 'rejected'));*/
-              //FocusManager.instance.primaryFocus?.unfocus();
-              if (tokenStore.getString('token').toString().isNotEmpty &&
-                  tokenStore.getString('token').toString() != 'rejected') {
-                /*
-                final statusCode = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CreateNewContact()));
-                await Future.delayed(Duration(seconds: 2), () {});
-                statusCodeEval(statusCode);*/
-              } else {
-                rejectAccess();
-              }
-            },
-            icon: Icon(Icons.phone),
-            text: "Add New",
-            background: colour('dblue'),
-          ),
-        ],
-      ),*/
     );
   }
 
   Widget _contentsOfIndex() {
-    List<String> temp = displayContent;
+    List<dynamic> temp = logBuffer.content;
     return ListView.builder(
         shrinkWrap: true,
         itemCount: temp.length,
@@ -271,7 +296,7 @@ class _ViewLogState extends State<ViewLog> {
             child: Text('     ' + temp[contactsIndex],
                 textAlign: TextAlign.left,
                 style: cxTextStyle(
-                    style: 'bold', colour: colour('white'), size: 15)),
+                    style: 'bold', colour: colour('white'), size: contentSize)),
           );
         });
   }

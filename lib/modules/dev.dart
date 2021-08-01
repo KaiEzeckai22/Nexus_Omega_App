@@ -16,8 +16,12 @@ import 'package:another_flushbar/flushbar.dart';
 //import 'package:flushbar/flushbar_helper.dart';
 //import 'dart:async';
 
+double contentSize = 14, titleSize = 40;
+
 Color colour(String? colour) {
   switch (colour) {
+    case ('pink'):
+      return Color(0xffff3c9d);
     case ('lred'):
       return Colors.red;
     case ('red'):
@@ -35,7 +39,9 @@ Color colour(String? colour) {
     case ('blue'):
       return Colors.blue;
     case ('dblue'):
-      return Color(0xFF01579B);
+      return Color(0xff01579b);
+    case ('lred'):
+      return Colors.red;
     case ('black'):
       return Colors.black;
     case ('grey'):
@@ -43,14 +49,14 @@ Color colour(String? colour) {
     case ('white'):
       return Colors.white;
     case ('def'):
-      return Color(0xFFFFFFFF);
+      return Color(0xffffffff);
     case ('sel'):
-      return Color(0xFF00ABFF);
+      return Color(0xff00abff);
     case ('sub'):
-      return Color(0xFF6F6F6F);
+      return Color(0xff6f6f6f);
     // CUSTOM PALLETTE
     case ('xblue'):
-      return Color(0xFF00A8DB);
+      return Color(0xff00a8db);
     default:
       return Colors.white;
   }
@@ -127,12 +133,14 @@ Widget cText({String? text, Color? colour, double? size, String? style}) {
       style: cxTextStyle(style: style, colour: colour, size: size));
 }
 
-TextStyle cxTextStyle({String? style, Color? colour, double? size}) {
+TextStyle cxTextStyle(
+    {String? style, Color? colour, double? size, String? fontFamily}) {
   double defaultSize = 20;
   // DEFAULT GREY BECAUSE WHITE FADES IN WHITE BG, BLACK FADES IN BLACK BG
   switch (style) {
     case 'bold':
       return TextStyle(
+        fontFamily: fontFamily,
         color: (colour != null) ? colour : Colors.white,
         fontStyle: FontStyle.normal,
         fontWeight: FontWeight.bold,
@@ -176,6 +184,10 @@ class PopupItem {
   PopupItem(this.value, this.name);
 }
 
+defocus() {
+  FocusManager.instance.primaryFocus?.unfocus();
+}
+
 /*
 List<PopupItem> selectables = [
   PopupItem(1, "ON"),
@@ -193,8 +205,9 @@ class SelectionMenu extends StatelessWidget {
         elevation: 20,
         enabled: true,
         icon: Icon(Icons.settings),
+        enableFeedback: true,
         onSelected: (value) {
-          FocusManager.instance.primaryFocus?.unfocus();
+          //defocus();
           onSelection(value.toString());
         },
         itemBuilder: (context) {
@@ -231,7 +244,7 @@ class FAB extends StatelessWidget {
     return FloatingActionButton.extended(
       onPressed: () {
         // >>>>>>>>>>>>>>>>>>>>>>>>>>>> CALLBACK BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        FocusManager.instance.primaryFocus?.unfocus();
+        defocus();
         onPressed();
       },
       icon: icon,
@@ -254,7 +267,7 @@ TextButton cxTextButton({
   return TextButton(
     onPressed: () {
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>> CALLBACK BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      FocusManager.instance.primaryFocus?.unfocus();
+      defocus();
       onPressed();
     },
     //icon: icon,
@@ -286,7 +299,7 @@ Card cxIconButton({
     child: IconButton(
       onPressed: () {
         // >>>>>>>>>>>>>>>>>>>>>>>>>>>> CALLBACK BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        FocusManager.instance.primaryFocus?.unfocus();
+        defocus();
         onPressed();
       },
       icon: (icon != null) ? icon : Icon(Icons.warning),
@@ -315,8 +328,10 @@ Flushbar disguisedToast(
     Color? buttonColour,
     TextStyle? buttonTextStyle,
     Function()? callback,
-    Function()? onDismiss}) {
-  return Flushbar(
+    Function()? onDismiss,
+    bool? closeAfter}) {
+  late Flushbar flushbar;
+  return flushbar = Flushbar(
     margin: EdgeInsets.all(10),
     padding: EdgeInsets.all(15),
     borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -333,7 +348,9 @@ Flushbar disguisedToast(
                     ? MaterialStateProperty.all<Color>(buttonColour)
                     : MaterialStateProperty.all<Color>(Colors.grey)),
             onPressed: () {
-              FocusManager.instance.primaryFocus?.unfocus();
+              if (closeAfter == null || closeAfter == true) {
+                flushbar.dismiss(true);
+              }
               callback();
             },
           )
@@ -385,8 +402,10 @@ Flushbar disguisedPrompt(
     Color? button2TextColour,
     Function()? button1Callback,
     Function()? button2Callback,
-    Function()? onDismiss}) {
+    Function()? onDismiss,
+    bool? closeAfter}) {
   late Flushbar flushbar;
+
   return flushbar = Flushbar(
     margin: EdgeInsets.all(10),
     padding: EdgeInsets.all(15),
@@ -397,8 +416,9 @@ Flushbar disguisedPrompt(
         TextButton(
             onPressed: (button1Callback != null)
                 ? () {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    flushbar.dismiss(true);
+                    if (closeAfter == null || closeAfter == true) {
+                      flushbar.dismiss(true);
+                    }
                     button1Callback();
                   }
                 : null,
@@ -414,8 +434,9 @@ Flushbar disguisedPrompt(
         TextButton(
             onPressed: (button2Callback != null)
                 ? () {
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    flushbar.dismiss(true);
+                    if (closeAfter == null || closeAfter == true) {
+                      flushbar.dismiss(true);
+                    }
                     button2Callback();
                   }
                 : null,

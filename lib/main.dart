@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nexus_omega_app/modules/main_menu.dart';
-import 'modules/logs.dart';
 
 void main() {
   runApp(MyApp());

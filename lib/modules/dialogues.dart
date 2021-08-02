@@ -318,7 +318,7 @@ class _DialogueListState extends State<DialogueList> {
                                                         dialoguesList[index]
                                                             .title,
                                                         style: cxTextStyle(
-                                                            style: 'bold',
+                                                            style: 'normal',
                                                             size: 24,
                                                             colour: colour(
                                                                 'white'))),
@@ -403,7 +403,7 @@ class _DialogueListState extends State<DialogueList> {
                 rejectAccess();
               }
             },
-            icon: Icon(Icons.phone),
+            icon: Icon(Icons.add),
             text: "Add New",
             background: colour('dblue'),
           ),

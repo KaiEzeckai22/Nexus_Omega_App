@@ -302,7 +302,7 @@ class _UpdateLogState extends State<UpdateLog> {
                     selectedColor: colour('sel'),
                     errorColor: Colors.red,
                     next: true,
-                    autoFocus: true),
+                    autoFocus: false),
                 hfill(10),
                 ctrlrField(
                     context: context,

@@ -324,7 +324,7 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
                     selectedColor: colour('sel'),
                     errorColor: Colors.red,
                     next: true,
-                    autoFocus: true),
+                    autoFocus: false),
                 hfill(10),
                 ctrlrField(
                     context: context,

@@ -52,7 +52,114 @@ flutter:
   - family: LexendDeca
     fonts:
       - asset: fonts/LexendDeca-Regular.ttf
-
+  - family: font1942
+    fonts:
+      - asset: fonts/1942.ttf
+  - family: atwriter
+    fonts:
+      - asset: fonts/atwriter.ttf
+  - family: Bebas
+    fonts:
+      - asset: fonts/Bebas-Regular.ttf
+  - family: Effect
+    fonts:
+      - asset: fonts/Effect.ttf
+  - family: Philosopher
+    fonts:
+      - asset: fonts/Philosopher-Regular.ttf
+  - family: Poison
+    fonts:
+      - asset: fonts/Poison-Regular.ttf
+  - family: Timeless
+    fonts:
+      - asset: fonts/Timeless.ttf
+  - family: Average
+    fonts:
+      - asset: fonts/Average-Regular.ttf
+  - family: BrokenGlass
+    fonts:
+      - asset: fonts/BrokenGlass.ttf
+  - family: Caveat
+    fonts:
+      - asset: fonts/Caveat-Regular.ttf
+  - family: CrimsonText
+    fonts:
+      - asset: fonts/CrimsonText-Roman.ttf
+  - family: DancingScript
+    fonts:
+      - asset: fonts/DancingScript-Regular.ttf
+  - family: Fenix
+    fonts:
+      - asset: fonts/Fenix-Regular.ttf
+  - family: FrederickaTheGreat
+    fonts:
+      - asset: fonts/FrederickaTheGreat-Regular.ttf
+  - family: FUTHA
+    fonts:
+      - asset: fonts/FUTHA.ttf
+  - family: HeavyEquipment
+    fonts:
+      - asset: fonts/HeavyEquipment.ttf
+  - family: Italianno
+    fonts:
+      - asset: fonts/Italianno-Regular.ttf
+  - family: LibreBaskerville
+    fonts:
+      - asset: fonts/LibreBaskerville-Regular.ttf    
+  - family: LindenHill
+    fonts:
+      - asset: fonts/LindenHill-Regular.ttf
+  - family: Luna
+    fonts:
+      - asset: fonts/Luna.ttf 
+  - family: Monofett
+    fonts:
+      - asset: fonts/Monofett.ttf    
+  - family: Monoton
+    fonts:
+      - asset: fonts/Monoton-Regular.ttf   
+  - family: norskode
+    fonts:
+      - asset: fonts/norskode.ttf   
+  - family: Overhaul
+    fonts:
+      - asset: fonts/Overhaul.ttf
+  - family: PoiretOne
+    fonts:
+      - asset: fonts/PoiretOne-Regular.ttf  
+  - family: Portmanteau
+    fonts:
+      - asset: fonts/Portmanteau Regular.ttf  
+  - family: PressStart2P
+    fonts:
+      - asset: fonts/PressStart2P-Regular.ttf   
+  - family: PrincessSofia
+    fonts:
+      - asset: fonts/PrincessSofia-Regular.ttf
+  - family: RobotoMono
+    fonts:
+      - asset: fonts/RobotoMono-Regular.ttf   
+  - family: RobotoSlab
+    fonts:
+      - asset: fonts/RobotoSlab-Regular.ttf 
+  - family: Smythe
+    fonts:
+      - asset: fonts/Smythe-Regular.ttf
+  - family: SortsMillGoudy
+    fonts:
+      - asset: fonts/SortsMillGoudy-Regular.ttf 
+  - family: SpecialElite
+    fonts:
+      - asset: fonts/SpecialElite.ttf    
+  - family: Stalemate
+    fonts:
+      - asset: fonts/Stalemate-Regular.ttf  
+  - family: Tippa
+    fonts:
+      - asset: fonts/Tippa.ttf
+  - family: Tippa
+    fonts:
+      - asset: fonts/Video.ttf                                            
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

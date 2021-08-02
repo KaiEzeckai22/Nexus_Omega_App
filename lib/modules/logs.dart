@@ -312,7 +312,7 @@ class _LogListState extends State<LogList> {
                                                     title: Text(
                                                         logsList[index].title,
                                                         style: cxTextStyle(
-                                                            style: 'bold',
+                                                            style: 'normal',
                                                             size: 24,
                                                             colour: colour(
                                                                 'white'))),
@@ -393,7 +393,7 @@ class _LogListState extends State<LogList> {
                 rejectAccess();
               }
             },
-            icon: Icon(Icons.phone),
+            icon: Icon(Icons.add),
             text: "Add New",
             background: colour('dblue'),
           ),

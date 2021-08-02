@@ -298,7 +298,7 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
                     selectedColor: colour('sel'),
                     errorColor: Colors.red,
                     next: true,
-                    autoFocus: true),
+                    autoFocus: false),
                 hfill(10),
                 ctrlrField(
                     context: context,

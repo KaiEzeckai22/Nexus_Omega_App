@@ -125,7 +125,7 @@ Widget ctrlrField({
       disabledBorder: InputBorder.none,
       contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 12),
       labelText: fieldPrompt,
-      labelStyle: cxTextStyle(style: 'bold', colour: selectedColor, size: 15),
+      labelStyle: cxTextStyle(style: 'normal', colour: selectedColor, size: 15),
       errorBorder: OutlineInputBorder(
         borderSide: BorderSide(
           color: (errorColor != null) ? errorColor : Colors.red,
@@ -133,7 +133,7 @@ Widget ctrlrField({
       ),
       //errorText: (ctrlrID.text.isEmpty) ? "Field is Required" : null,
     ),
-    style: cxTextStyle(style: 'bold', colour: defaultColor, size: 15),
+    style: cxTextStyle(style: 'normal', colour: defaultColor, size: 15),
   );
 }
 
@@ -141,6 +141,46 @@ Widget cText({String? text, Color? colour, double? size, String? style}) {
   return Text((text != null) ? text : 'test_text',
       style: cxTextStyle(style: style, colour: colour, size: size));
 }
+
+List<String> importedFonts = [
+  'LexendDeca',
+  'font1942',
+  'atwriter',
+  'Bebas',
+  'Effect',
+  'Philosopher',
+  'Poison',
+  'Timeless',
+  'Average',
+  'BrokenGlass',
+  'Caveat',
+  'CrimsonText',
+  'DancingScript',
+  'Fenix',
+  'FrederickaTheGreat',
+  'FUTHA',
+  'HeavyEquipment',
+  'Italianno',
+  'LibreBaskerville',
+  'LindenHill',
+  'Luna',
+  'Monofett',
+  'Monoton',
+  'norskode',
+  'Overhaul',
+  'PoiretOne',
+  'Portmanteau',
+  'PressStart2P',
+  'PrincessSofia',
+  'RobotoMono',
+  'RobotoSlab',
+  'Smythe',
+  'SortsMillGoudy',
+  'SpecialElite',
+  'Stalemate',
+  'Tippa',
+  'Tippa',
+];
 
 TextStyle cxTextStyle(
     {String? style, Color? colour, double? size, String? fontFamily}) {
@@ -157,6 +197,7 @@ TextStyle cxTextStyle(
       );
     case 'italic':
       return TextStyle(
+        fontFamily: fontFamily,
         color: (colour != null) ? colour : Colors.white,
         fontStyle: FontStyle.italic,
         fontWeight: FontWeight.normal,
@@ -164,6 +205,7 @@ TextStyle cxTextStyle(
       );
     case 'boldItalic':
       return TextStyle(
+        fontFamily: fontFamily,
         color: (colour != null) ? colour : Colors.white,
         fontStyle: FontStyle.italic,
         fontWeight: FontWeight.bold,
@@ -171,6 +213,7 @@ TextStyle cxTextStyle(
       );
     default:
       return TextStyle(
+        fontFamily: fontFamily,
         color: (colour != null) ? colour : Colors.white,
         fontStyle: FontStyle.normal,
         fontWeight: FontWeight.normal,
@@ -521,6 +564,123 @@ Flushbar disguisedPrompt(
             style: ButtonStyle(
                 backgroundColor: (button2Colour != null)
                     ? MaterialStateProperty.all<Color>(button2Colour)
+                    : MaterialStateProperty.all<Color>(Colors.grey))),
+      ],
+    ),
+    duration: (secDur == null)
+        ? Duration(seconds: 3)
+        : (secDur == 0)
+            ? null
+            : Duration(seconds: secDur),
+    isDismissible: (dismissible != null) ? dismissible : true,
+    dismissDirection: FlushbarDismissDirection.HORIZONTAL,
+    forwardAnimationCurve: Curves.fastOutSlowIn,
+    onStatusChanged: (status) async {
+      if ((status == FlushbarStatus.DISMISSED) && (onDismiss != null)) {
+        onDismiss();
+      }
+    },
+    titleText: (title != null)
+        ? Text(
+            title,
+            style: (titleStyle != null)
+                ? titleStyle
+                : cxTextStyle(style: 'normal'),
+          )
+        : null,
+    messageText: Text(
+      message,
+      style:
+          (messageStyle != null) ? messageStyle : cxTextStyle(style: 'normal'),
+    ),
+  )..show(context);
+}
+
+Flushbar tripleDisguises(
+    {required BuildContext context,
+    bool? dismissible,
+    String? title,
+    TextStyle? titleStyle,
+    required String message,
+    TextStyle? messageStyle,
+    Color? bgcolour,
+    int? secDur,
+    VoidCallback? atEnd,
+    String? button1Name,
+    Color? button1Colour,
+    Color? button1TextColour,
+    String? button2Name,
+    Color? button2Colour,
+    Color? button2TextColour,
+    String? button3Name,
+    Color? button3Colour,
+    Color? button3TextColour,
+    Function()? button1Callback,
+    Function()? button2Callback,
+    Function()? button3Callback,
+    Function()? onDismiss,
+    bool? closeAfter}) {
+  late Flushbar flushbar;
+
+  return flushbar = Flushbar(
+    margin: EdgeInsets.all(10),
+    padding: EdgeInsets.all(15),
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    backgroundColor: (bgcolour != null) ? bgcolour : Colors.black87,
+    mainButton: Row(
+      children: [
+        TextButton(
+            onPressed: (button1Callback != null)
+                ? () {
+                    if (closeAfter == null || closeAfter == true) {
+                      flushbar.dismiss(true);
+                    }
+                    button1Callback();
+                  }
+                : null,
+            child: Text(
+              (button1Name != null) ? button1Name : 'BUTTON',
+              style: cxTextStyle(colour: button1TextColour),
+            ),
+            style: ButtonStyle(
+                backgroundColor: (button1Colour != null)
+                    ? MaterialStateProperty.all<Color>(button1Colour)
+                    : MaterialStateProperty.all<Color>(Colors.grey))),
+        vfill(12),
+        TextButton(
+            onPressed: (button2Callback != null)
+                ? () {
+                    if (closeAfter == null || closeAfter == true) {
+                      flushbar.dismiss(true);
+                    }
+                    button2Callback();
+                  }
+                : null,
+            child: Text(
+              (button2Name != null) ? button2Name : 'BUTTON',
+              style: cxTextStyle(colour: button2TextColour),
+            ),
+            style: ButtonStyle(
+                backgroundColor: (button2Colour != null)
+                    ? MaterialStateProperty.all<Color>(button2Colour)
+                    : MaterialStateProperty.all<Color>(Colors.grey))),
+        vfill(12),
+        TextButton(
+            onPressed: (button3Callback != null)
+                ? () {
+                    if (closeAfter == null || closeAfter == true) {
+                      flushbar.dismiss(true);
+                    }
+                    button3Callback();
+                  }
+                : null,
+            child: Text(
+              (button3Name != null) ? button3Name : 'BUTTON',
+              style: cxTextStyle(colour: button3TextColour),
+            ),
+            style: ButtonStyle(
+                backgroundColor: (button3Colour != null)
+                    ? MaterialStateProperty.all<Color>(button3Colour)
                     : MaterialStateProperty.all<Color>(Colors.grey))),
       ],
     ),

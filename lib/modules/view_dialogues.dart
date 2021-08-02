@@ -28,10 +28,17 @@ class ViewDialogue extends StatefulWidget {
 class _ViewDialogueState extends State<ViewDialogue> {
   late SharedPreferences tokenStore;
   String debug = "";
-  int numdeBug = 0;
+  int numdeBug = 0,
+      titleFontIndex = 0,
+      authorFontIndex = 0,
+      contentFontIndex = 0;
   TextEditingController searchCtrlr = TextEditingController();
   bool promptLocked = false;
   String searchString = "";
+  String titleFont = importedFonts[0];
+  String authorFont = importedFonts[0];
+  String contentFont = importedFonts[0];
+
   late String displayTitle, displayTag;
   late List<String> displayContent;
   late Dialogue dialogueBuffer;
@@ -52,7 +59,8 @@ class _ViewDialogueState extends State<ViewDialogue> {
     PopupItem(2, 'Delete'),
     PopupItem(3, 'Modify Title Size'),
     PopupItem(4, 'Modify Content Size'),
-    PopupItem(4, 'Modify Author ID Size'),
+    PopupItem(5, 'Modify Author ID Size'),
+    PopupItem(6, 'Font Style Toggle'),
     // PopupItem(
     //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
   ];
@@ -152,6 +160,60 @@ class _ViewDialogueState extends State<ViewDialogue> {
         break;
       case 'Delete':
         deleteDialoguePrompt(widget.dialogueID, widget.dialogueTitle);
+        break;
+      case 'Font Style Toggle':
+        tripleDisguises(
+          dismissible: true,
+          secDur: 0,
+          closeAfter: false,
+          context: context,
+          title: 'Modify Font Styles',
+          titleStyle: cxTextStyle(style: 'bold', size: 15),
+          message: 'Slide to Dismiss',
+          messageStyle: cxTextStyle(style: 'normal', size: 16),
+          button1Name: 'Title',
+          button1Colour: colour('dblue'),
+          button1Callback: () {
+            setState(() {
+              if (titleFontIndex < importedFonts.length - 1) {
+                titleFontIndex++;
+                titleFont = importedFonts[titleFontIndex];
+              } else {
+                titleFontIndex = 0;
+                titleFont = importedFonts[titleFontIndex];
+              }
+            });
+            //print(importedFonts[titleFontIndex]);
+          },
+          button2Name: 'Author',
+          button2Colour: colour('dgreen'),
+          button2Callback: () {
+            setState(() {
+              if (authorFontIndex < importedFonts.length - 1) {
+                authorFontIndex++;
+                authorFont = importedFonts[authorFontIndex];
+              } else {
+                authorFontIndex = 0;
+                authorFont = importedFonts[authorFontIndex];
+              }
+            });
+            //print(importedFonts[authorFontIndex]);
+          },
+          button3Name: 'Content',
+          button3Colour: colour('dred'),
+          button3Callback: () {
+            setState(() {
+              if (contentFontIndex < importedFonts.length - 1) {
+                contentFontIndex++;
+                contentFont = importedFonts[contentFontIndex];
+              } else {
+                contentFontIndex = 0;
+                contentFont = importedFonts[contentFontIndex];
+              }
+            });
+            //print(importedFonts[authorFontIndex]);
+          },
+        );
         break;
       case 'nukeTest':
         reExtract(widget.dialogueID);
@@ -308,7 +370,10 @@ class _ViewDialogueState extends State<ViewDialogue> {
                       EdgeInsets.only(top: 5, left: 5, right: 5, bottom: 3),
                   child: Text(
                     dialogueBuffer.title,
-                    style: cxTextStyle(style: 'bold', size: titleSize),
+                    style: cxTextStyle(
+                        style: 'normal',
+                        size: titleSize,
+                        fontFamily: titleFont),
                   ),
                 ),
               ),
@@ -318,7 +383,10 @@ class _ViewDialogueState extends State<ViewDialogue> {
                   padding: EdgeInsets.only(left: 5, right: 5, bottom: 3),
                   child: Text(
                     'by: ' + dialogueBuffer.author,
-                    style: cxTextStyle(style: 'bold', size: authorIDSize),
+                    style: cxTextStyle(
+                        style: 'normal',
+                        size: authorIDSize,
+                        fontFamily: authorFont),
                   ),
                 ),
               ),
@@ -344,9 +412,10 @@ class _ViewDialogueState extends State<ViewDialogue> {
             child: Text('     ' + temp[index][1],
                 textAlign: TextAlign.left,
                 style: cxTextStyle(
-                    style: 'bold',
+                    style: 'normal',
                     colour: colour(temp[index][0]),
-                    size: contentSize)),
+                    size: contentSize,
+                    fontFamily: contentFont)),
           );
         });
   }

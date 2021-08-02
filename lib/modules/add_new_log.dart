@@ -196,7 +196,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
                   selectedColor: colour('sel'),
                   errorColor: Colors.red,
                   next: true,
-                  autoFocus: true),
+                  autoFocus: false),
               hfill(10),
               ctrlrField(
                   context: context,

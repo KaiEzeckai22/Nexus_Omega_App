@@ -45,19 +45,9 @@ class _LogListState extends State<LogList> {
         loginTrigger();
         break;
       case 'Log-out':
-        //print("Log-out OTW");
         tokenStore.setString('token', '');
         reloadList();
         break;
-      /*
-      case 'DevTest-sp':
-        prefSetup()
-            .then((value) => {print("TOKEN FROM PREFERENCES: " + value!)});
-        print(tokenStore.getString('token'));
-        break;
-      case 'DevTest-newGet':
-        //newGet();
-        break;*/
       case 'nukeTest':
         // NUKE AREA
         disguisedPrompt(
@@ -70,19 +60,14 @@ class _LogListState extends State<LogList> {
             button1Colour: colour('dgreen'),
             button1Callback: () => setState(() {
                   numdeBug++;
-                  print(numdeBug);
                 }),
             button2Name: 'No',
             button2Colour: colour('red'),
             button2Callback: () => setState(() {
                   numdeBug--;
-                  print(numdeBug);
                 }));
         break;
       default:
-        print(_selectedChoices);
-        _selectedChoices = "none";
-        print(_selectedChoices);
     }
   }
 
@@ -103,7 +88,6 @@ class _LogListState extends State<LogList> {
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
       },
     );
-    // print("RESPONSE BODY: " + response.body.toString());
     if (response.body.toString() == 'Forbidden') {
       rejectAccess();
       setState(() {
@@ -121,10 +105,8 @@ class _LogListState extends State<LogList> {
   Future<String?> prefSetup() async {
     tokenStore = await SharedPreferences.getInstance();
     if (tokenStore.getString('token') != null) {
-      print(tokenStore.getString('token'));
       return tokenStore.getString('token');
     } else {
-      print(tokenStore.getString('token'));
       tokenStore.setString('token', 'empty');
       return 'empty token';
     }
@@ -378,9 +360,6 @@ class _LogListState extends State<LogList> {
           FAB(
             onPressed: () async {
               // >>>>>>>>>>>>>>>>>>>>>>>>>>>> PUSH TO ADD SCREEN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-              /*print((tokenStore.getString('token').toString().isNotEmpty &&
-                  tokenStore.getString('token').toString() != 'rejected'));*/
-              //FocusManager.instance.primaryFocus?.unfocus();
               if (tokenStore.getString('token').toString().isNotEmpty &&
                   tokenStore.getString('token').toString() != 'rejected') {
                 final statusCode = await Navigator.push(

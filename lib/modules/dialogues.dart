@@ -7,12 +7,9 @@ import 'package:nexus_omega_app/modules/add_new_dialogue.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 
-import 'add_new_log.dart';
 import 'dev.dart';
 import 'login.dart';
 import 'view_dialogues.dart';
-import 'view_log.dart';
-
 class DialogueList extends StatefulWidget {
   @override
   _DialogueListState createState() => _DialogueListState();
@@ -47,19 +44,9 @@ class _DialogueListState extends State<DialogueList> {
         loginTrigger();
         break;
       case 'Log-out':
-        //print("Log-out OTW");
         tokenStore.setString('token', '');
         reloadList();
         break;
-      /*
-      case 'DevTest-sp':
-        prefSetup()
-            .then((value) => {print("TOKEN FROM PREFERENCES: " + value!)});
-        print(tokenStore.getString('token'));
-        break;
-      case 'DevTest-newGet':
-        //newGet();
-        break;*/
       case 'nukeTest':
         // NUKE AREA
         disguisedPrompt(
@@ -72,19 +59,14 @@ class _DialogueListState extends State<DialogueList> {
             button1Colour: colour('dgreen'),
             button1Callback: () => setState(() {
                   numdeBug++;
-                  print(numdeBug);
                 }),
             button2Name: 'No',
             button2Colour: colour('red'),
             button2Callback: () => setState(() {
                   numdeBug--;
-                  print(numdeBug);
                 }));
         break;
       default:
-        print(_selectedChoices);
-        _selectedChoices = "none";
-        print(_selectedChoices);
     }
   }
 
@@ -105,7 +87,6 @@ class _DialogueListState extends State<DialogueList> {
         HttpHeaders.authorizationHeader: "Bearer " + retrievedToken
       },
     );
-    // print("RESPONSE BODY: " + response.body.toString());
     if (response.body.toString() == 'Forbidden') {
       rejectAccess();
       setState(() {
@@ -123,10 +104,8 @@ class _DialogueListState extends State<DialogueList> {
   Future<String?> prefSetup() async {
     tokenStore = await SharedPreferences.getInstance();
     if (tokenStore.getString('token') != null) {
-      print(tokenStore.getString('token'));
       return tokenStore.getString('token');
     } else {
-      print(tokenStore.getString('token'));
       tokenStore.setString('token', 'empty');
       return 'empty token';
     }
@@ -388,9 +367,6 @@ class _DialogueListState extends State<DialogueList> {
           FAB(
             onPressed: () async {
               // >>>>>>>>>>>>>>>>>>>>>>>>>>>> PUSH TO ADD SCREEN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-              /*print((tokenStore.getString('token').toString().isNotEmpty &&
-                  tokenStore.getString('token').toString() != 'rejected'));*/
-              //FocusManager.instance.primaryFocus?.unfocus();
               if (tokenStore.getString('token').toString().isNotEmpty &&
                   tokenStore.getString('token').toString() != 'rejected') {
                 final statusCode = await Navigator.push(

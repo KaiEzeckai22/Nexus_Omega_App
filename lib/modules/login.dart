@@ -37,26 +37,18 @@ class _LoginScreenState extends State<LoginScreen> {
     await Future.delayed(Duration(seconds: 2), () {});
     String authCode = 'Basic ' +
         base64Encode(utf8.encode(user.username + ':' + user.password));
-    print(authCode);
     final response = await http.post(
       Uri.parse(
           /*'http://localhost:2077/login_nuke'*/ 'https://nexus-omega.herokuapp.com/login'),
       headers: <String, String>{
+        // 'Acces-Control-Allow-Origin': '*',
         'Content-Type': 'application/json; charset=UTF-8',
         'authorization': authCode,
       },
-      /*
-      body: jsonEncode({
-        'username': username,
-        'password': password,
-      }),*/
     );
-    print(json.decode(response.body)['token']);
     SharedPreferences tokenStore = await SharedPreferences.getInstance();
     tokenStore.setString('token', json.decode(response.body)['token']);
-    print(tokenStore);
 
-    print("STORED TOKEN: " + tokenStore.getString('token').toString());
     return (response);
   }
 
@@ -71,16 +63,11 @@ class _LoginScreenState extends State<LoginScreen> {
     if (user.username.isEmpty || user.password.isEmpty) {
       emptyDetect = true;
     }
-
-    Text message =
-        Text('User : ' + user.username + ' / ' + 'Password : ' + user.password);
-
     if (!emptyDetect) {
       var response = await uploadUser(
         user.username,
         user.password,
       );
-      //print(json.decode(response.body)['token']);
       statusCode = response.statusCode;
       responseToken = json.decode(response.body)['token'];
       await Future.delayed(Duration(seconds: 2), () {});

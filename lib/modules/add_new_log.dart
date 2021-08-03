@@ -94,7 +94,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
     return tokenStore.getString('token');
   }
 
-  void saveContact() async {
+  void saveLog() async {
     bool emptyDetect = false;
     List<String> listedContent = <String>[];
     for (int i = 0; i < _count; i++) {
@@ -254,7 +254,7 @@ class _CreateNewLogState extends State<CreateNewLog> {
           FAB(
             onPressed: () {
               // >>>>>>>>>>>>>>>>>>>>>>>>>>>> SAVE BUTTON <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-              saveContact();
+              saveLog();
             },
             icon: Icon(Icons.save),
             text: "Save",
@@ -359,36 +359,5 @@ class _CreateNewLogState extends State<CreateNewLog> {
       ),
       hfill(12),
     ]);
-  }
-
-  Widget _removeButton(int index) {
-    return InkWell(
-      onTap: () {
-        //FocusManager.instance.primaryFocus?.unfocus();
-        if (listSize != 1) {
-          setState(() {
-            _count--;
-            increments--;
-            listSize--;
-            contentsCtrlr.removeAt(index);
-          });
-        }
-      },
-      child: (_count != 1)
-          ? Container(
-              alignment: Alignment.center,
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: Icon(
-                Icons.cancel,
-                color: Colors.white70,
-              ),
-            )
-          : null,
-    );
   }
 }

@@ -18,7 +18,6 @@ class UpdateLog extends StatefulWidget {
     required this.logContents,
     required this.logID,
     required this.logAuthor,
-    /*CONTACTS*/
   }) : super(key: key);
   @override
   _UpdateLogState createState() => _UpdateLogState();
@@ -112,11 +111,10 @@ class _UpdateLogState extends State<UpdateLog> {
         'author': author,
       }),
     );
-    //print(response.body);
-    //print('here1');
+ 
     if (response.statusCode == 200) {
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>> RETURN OR UNDO PROMPT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      //print('here2');
+ 
       flush = disguisedPrompt(
           dismissible: false,
           secDur: 0,
@@ -136,7 +134,7 @@ class _UpdateLogState extends State<UpdateLog> {
           button2Callback: () async {
             flush.dismiss(true);
             resetCtrlrFields();
-            //saveContact();
+            //saveLog();
             //s await Future.delayed(Duration(seconds: 2), () {});
           });
     } else {
@@ -153,7 +151,7 @@ class _UpdateLogState extends State<UpdateLog> {
     return tokenStore.getString('token');
   }
 
-  void saveContact() async {
+  void saveLog() async {
     int statusCode = 0;
     bool emptyDetect = false;
     List<String> listedContent = <String>[];
@@ -216,11 +214,11 @@ class _UpdateLogState extends State<UpdateLog> {
       titleCtrlr = TextEditingController(text: previousLog.title);
       tagsCtrlr = TextEditingController(text: previousLog.tags);
       authorCtrlr = TextEditingController(text: previousLog.author);
-      List<String> contactsToDisplay = <String>[];
-      contactsToDisplay.clear();
+      List<String> contentToDisplay = <String>[];
+      contentToDisplay.clear();
       final int edge = previousLog.content.length;
       for (int i = 0; i < edge; i++) {
-        contactsToDisplay.add(previousLog.content[i]);
+        contentToDisplay.add(previousLog.content[i]);
         if (i < edge) {
           contentsCtrlr.insert(
               0, TextEditingController(text: previousLog.content[i]));
@@ -248,33 +246,7 @@ class _UpdateLogState extends State<UpdateLog> {
               icon: Icon(Icons.clear),
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
-                setState(() {
-                  key = 0;
-                  increments = 0;
-                  listSize = 1;
-                  _count = 0;
-                  titleCtrlr.clear();
-                  tagsCtrlr.clear();
-                  contentsCtrlr.clear();
-                  contentsCtrlr = <TextEditingController>[
-                    TextEditingController()
-                  ];
-                  titleCtrlr = TextEditingController(text: previousLog.title);
-                  tagsCtrlr = TextEditingController(text: previousLog.tags);
-                  authorCtrlr = TextEditingController(text: previousLog.author);
-                  List<String> contactsToDisplay = <String>[];
-                  contactsToDisplay.clear();
-                  final int edge = previousLog.content.length;
-                  for (int i = 0; i < edge; i++) {
-                    contactsToDisplay.add(previousLog.content[i]);
-                    if (i < edge) {
-                      contentsCtrlr.insert(0,
-                          TextEditingController(text: previousLog.content[i]));
-                    }
-                    _count++;
-                    listSize = widget.logContents.length;
-                  }
-                });
+                resetCtrlrFields();
               },
             )
           ],
@@ -366,7 +338,7 @@ class _UpdateLogState extends State<UpdateLog> {
             FAB(
               onPressed: () {
                 // >>>>>>>>>>>>>>>>>>>>>>>>>>>> SAVE BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                saveContact();
+                saveLog();
               },
               icon: Icon(Icons.save),
               text: "Save",

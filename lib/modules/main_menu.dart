@@ -19,8 +19,15 @@ class MainMenu extends StatefulWidget {
 
 class _MainMenuState extends State<MainMenu> {
   late SharedPreferences tokenStore;
-  List<Log> contactsList = [];
-  List<String> main_menu_options = ['Logs', 'Dialogues'];
+  List<String> mainOptions = [
+    'Logs',
+    'Dialogues',
+    // 'Nuke',
+    // 'PJP',
+    // 'Projects',
+    // 'Casual Tragedy',
+    // 'More',
+  ];
   String debug = "";
   int numdeBug = 0;
   TextEditingController searchCtrlr = TextEditingController();
@@ -46,42 +53,32 @@ class _MainMenuState extends State<MainMenu> {
         loginTrigger();
         break;
       case 'Log-out':
-        //print("Log-out OTW");
+        tokenStore.setString('token', '');
+        disguisedToast(
+            context: context,
+            message: 'Logged out',
+            messageStyle: cxTextStyle(style: 'bold', colour: colour('red')));
         break;
-      /*
-      case 'DevTest-sp':
-        prefSetup()
-            .then((value) => {print("TOKEN FROM PREFERENCES: " + value!)});
-        print(tokenStore.getString('token'));
-        break;
-      case 'DevTest-newGet':
-        //newGet();
-        break;*/
       case 'nukeTest':
         // NUKE AREA
-        disguisedPrompt(
-            context: context,
-            title: 'Confirm Delete',
-            titleStyle: cxTextStyle(style: 'bold'),
-            message: '   Would you like\n   to proceed?',
-            messageStyle: cxTextStyle(style: 'italic', size: 16),
-            button1Name: 'Yes',
-            button1Colour: colour('dgreen'),
-            button1Callback: () => setState(() {
-                  numdeBug++;
-                  print(numdeBug);
-                }),
-            button2Name: 'No',
-            button2Colour: colour('red'),
-            button2Callback: () => setState(() {
-                  numdeBug--;
-                  print(numdeBug);
-                }));
+        // disguisedPrompt(
+        //     context: context,
+        //     title: 'Confirm Delete',
+        //     titleStyle: cxTextStyle(style: 'bold'),
+        //     message: '   Would you like\n   to proceed?',
+        //     messageStyle: cxTextStyle(style: 'italic', size: 16),
+        //     button1Name: 'Yes',
+        //     button1Colour: colour('dgreen'),
+        //     button1Callback: () => setState(() {
+        //           numdeBug++;
+        //         }),
+        //     button2Name: 'No',
+        //     button2Colour: colour('red'),
+        //     button2Callback: () => setState(() {
+        //           numdeBug--;
+        //         }));
         break;
       default:
-        print(_selectedChoices);
-        _selectedChoices = "none";
-        print(_selectedChoices);
     }
   }
 
@@ -139,7 +136,7 @@ class _MainMenuState extends State<MainMenu> {
                       child: ListView.builder(
                           key: UniqueKey(),
                           padding: EdgeInsetsDirectional.all(10), // MARK
-                          itemCount: main_menu_options.length,
+                          itemCount: mainOptions.length,
                           physics: NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemBuilder: (BuildContext context, int index) {
@@ -157,7 +154,7 @@ class _MainMenuState extends State<MainMenu> {
                                 child: Column(
                                   children: <Widget>[
                                     ListTile(
-                                      title: Text(main_menu_options[index],
+                                      title: Text(mainOptions[index],
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
@@ -172,43 +169,6 @@ class _MainMenuState extends State<MainMenu> {
           ),
         ],
       ),
-      /*
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          
-          FAB(
-            onPressed: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
-            icon: Icon(Icons.refresh),
-            text: "Refresh",
-            background: colour('dblue'),
-          ),
-          vfill(12),
-          FAB(
-            onPressed: () async {
-              // >>>>>>>>>>>>>>>>>>>>>>>>>>>> PUSH TO ADD SCREEN <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-              /*print((tokenStore.getString('token').toString().isNotEmpty &&
-                  tokenStore.getString('token').toString() != 'rejected'));*/
-              //FocusManager.instance.primaryFocus?.unfocus();
-              if (tokenStore.getString('token').toString().isNotEmpty &&
-                  tokenStore.getString('token').toString() != 'rejected') {
-                /*
-                final statusCode = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CreateNewContact()));
-                await Future.delayed(Duration(seconds: 2), () {});
-                statusCodeEval(statusCode);*/
-              } else {}
-            },
-            icon: Icon(Icons.phone),
-            text: "Add New",
-            background: colour('dblue'),
-          ),
-        ],
-      ),*/
     );
   }
 
@@ -223,19 +183,22 @@ class _MainMenuState extends State<MainMenu> {
         context: context,
         title: "Redirecting to",
         titleStyle: cxTextStyle(style: 'bold'),
-        message: '  ' + main_menu_options[index],
+        message: '  ' + mainOptions[index],
         messageStyle: cxTextStyle());
     switch (index) {
       case 0:
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => new LogList()));
-        //disguisedToast(context: context, message: main_menu_options[index]);
+        //disguisedToast(context: context, message: mainOptions[index]);
         break;
       case 1:
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => new DialogueList()));
-        //disguisedToast(context: context, message: main_menu_options[index]);
+        //disguisedToast(context: context, message: mainOptions[index]);
         break;
+      case 2:
+
+        //disguisedToast(context: context, message: mainOptions[index]);
         break;
       default:
         break;

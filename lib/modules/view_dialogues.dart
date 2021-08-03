@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nexus_omega_app/model/dialogue.dart';
 import 'dart:convert';
@@ -8,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'dev.dart';
 import 'update_dialogue.dart';
-import 'update_log.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ViewDialogue extends StatefulWidget {
@@ -66,6 +64,14 @@ class _ViewDialogueState extends State<ViewDialogue> {
     Share.share(text, subject: any.title);
   }
 
+  void exportJSON(BuildContext context, Dialogue any) {
+    //final RenderBox box = context.findRenderObject();
+    Share.share(
+      any.toJson().toString(),
+      subject: any.title + '-JSON',
+    );
+  }
+
   List<PopupItem> menu = [
     PopupItem(1, 'Update'),
     PopupItem(2, 'Delete'),
@@ -74,6 +80,7 @@ class _ViewDialogueState extends State<ViewDialogue> {
     PopupItem(5, 'Modify Author ID Size'),
     PopupItem(6, 'Font Style Toggle'),
     PopupItem(7, 'Share'),
+    PopupItem(8, 'Export JSON'),
     // PopupItem(
     //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
   ];
@@ -82,11 +89,6 @@ class _ViewDialogueState extends State<ViewDialogue> {
     setState(() {
       _selectedChoices = choice;
     });
-    print(authorIDSize.toString() +
-        ' / ' +
-        titleSize.toString() +
-        ' / ' +
-        contentSize.toString());
     switch (_selectedChoices) {
       case 'Update':
         defocus();
@@ -196,7 +198,7 @@ class _ViewDialogueState extends State<ViewDialogue> {
                 titleFont = importedFonts[titleFontIndex];
               }
             });
-            //print(importedFonts[titleFontIndex]);
+           
           },
           button2Name: 'Author',
           button2Colour: colour('dgreen'),
@@ -210,7 +212,6 @@ class _ViewDialogueState extends State<ViewDialogue> {
                 authorFont = importedFonts[authorFontIndex];
               }
             });
-            //print(importedFonts[authorFontIndex]);
           },
           button3Name: 'Content',
           button3Colour: colour('dred'),
@@ -224,12 +225,14 @@ class _ViewDialogueState extends State<ViewDialogue> {
                 contentFont = importedFonts[contentFontIndex];
               }
             });
-            //print(importedFonts[authorFontIndex]);
           },
         );
         break;
       case 'Share':
         shareDialogue(context, dialogueBuffer);
+        break;
+      case 'Export JSON':
+        exportJSON(context, dialogueBuffer);
         break;
       case 'nukeTest':
         reExtract(widget.dialogueID);
@@ -245,29 +248,24 @@ class _ViewDialogueState extends State<ViewDialogue> {
         //     button1Colour: colour('dgreen'),
         //     button1Callback: () => setState(() {
         //           numdeBug++;
-        //           print(numdeBug);
         //         }),
         //     button2Name: 'No',
         //     button2Colour: colour('red'),
         //     button2Callback: () => setState(() {
         //           numdeBug--;
-        //           print(numdeBug);
         //         }));
         break;
       default:
-        print(_selectedChoices);
-        _selectedChoices = "none";
-        print(_selectedChoices);
+      _selectedChoices = "none";
+
     }
   }
 
   Future<String?> prefSetup() async {
     tokenStore = await SharedPreferences.getInstance();
     if (tokenStore.getString('token') != null) {
-      print(tokenStore.getString('token'));
       return tokenStore.getString('token');
     } else {
-      print(tokenStore.getString('token'));
       tokenStore.setString('token', 'empty');
       return 'empty token';
     }

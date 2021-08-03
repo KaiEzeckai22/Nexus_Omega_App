@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:nexus_omega_app/model/dialogue.dart';
-import 'package:nexus_omega_app/model/log.dart';
 import 'dev.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
@@ -46,25 +45,6 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
     // PopupItem(
     //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
   ];
-  String _selectedChoices = "none";
-  Future<void> _select(String choice) async {
-    setState(() {
-      _selectedChoices = choice;
-    });
-    print(authorIDSize.toString() +
-        ' / ' +
-        titleSize.toString() +
-        ' / ' +
-        contentSize.toString());
-    switch (_selectedChoices) {
-      case 'Update':
-        break;
-      default:
-        print(_selectedChoices);
-        _selectedChoices = "none";
-        print(_selectedChoices);
-    }
-  }
 
   Future<int> deleteDialogue(String id) async {
     disguisedToast(
@@ -137,11 +117,8 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
         'author': author,
       }),
     );
-    //print(response.body);
-    //print('here1');
     if (response.statusCode == 200) {
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>> RETURN OR UNDO PROMPT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      //print('here2');
       flush = disguisedPrompt(
           dismissible: false,
           secDur: 0,
@@ -161,8 +138,6 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
           button2Callback: () async {
             flush.dismiss(true);
             resetCtrlrFields();
-            //saveContact();
-            //s await Future.delayed(Duration(seconds: 2), () {});
           });
     } else {
       disguisedToast(
@@ -178,32 +153,26 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
     return tokenStore.getString('token');
   }
 
-  void saveContact() async {
+  void saveDialogue() async {
     int statusCode = 0;
     bool emptyDetect = false;
     List<List<String>> listedContent = <List<String>>[];
     List<String> subContent = <String>[];
     for (int i = 0; i < _count; i++) {
-      //print(colours[(_count - i - 1)]);
       subContent.add(colours[(_count - i - 1)]);
       subContent.add(contentsCtrlr[i].text);
-      //print(subContent);
+
       listedContent.add(subContent.toList());
-      //print(listedContent);
 
       subContent.clear();
       if (contentsCtrlr[i].text.isEmpty) {
         emptyDetect = true;
       }
     }
-    print(listedContent.reversed);
     setState(() {
       newDialogue = new Dialogue(titleCtrlr.text, tagsCtrlr.text,
           listedContent.reversed.toList(), authorCtrlr.text);
     });
-    print(subContent.reversed);
-
-    //print(newDialogue.toJson());
     if (newDialogue.title.isEmpty || newDialogue.tags.isEmpty) {
       emptyDetect = true;
     }
@@ -363,7 +332,7 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
             FAB(
               onPressed: () {
                 // >>>>>>>>>>>>>>>>>>>>>>>>>>>> SAVE BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                saveContact();
+                saveDialogue();
               },
               icon: Icon(Icons.save),
               text: "Save",
@@ -383,7 +352,6 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
   }
 
   _contentInput(int index, context) {
-    //print(contentColours[index]);
     Color currentColor = colour(colours[_count - index - 1]);
     return Column(children: <Widget>[
       Row(
@@ -499,37 +467,5 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
       ),
       hfill(12),
     ]);
-  }
-
-  Widget _removeButton(int index) {
-    return InkWell(
-      onTap: () {
-        //FocusManager.instance.primaryFocus?.unfocus();
-        if (_count != 1) {
-          setState(() {
-            _count--;
-            increments--;
-            listSize--;
-            contentsCtrlr.removeAt(index);
-            colours.removeAt(_count - index);
-          });
-        }
-      },
-      child: (_count != 1)
-          ? Container(
-              alignment: Alignment.center,
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: Icon(
-                Icons.cancel,
-                color: Colors.white70,
-              ),
-            )
-          : null,
-    );
   }
 }

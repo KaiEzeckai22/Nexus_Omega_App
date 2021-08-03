@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:nexus_omega_app/model/dialogue.dart';
-import 'package:nexus_omega_app/model/log.dart';
 import 'dev.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
@@ -57,26 +56,6 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
     // PopupItem(
     //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
   ];
-  String _selectedChoices = "none";
-  Future<void> _select(String choice) async {
-    setState(() {
-      _selectedChoices = choice;
-    });
-    print(authorIDSize.toString() +
-        ' / ' +
-        titleSize.toString() +
-        ' / ' +
-        contentSize.toString());
-    switch (_selectedChoices) {
-      case 'Update':
-        break;
-      default:
-        print(_selectedChoices);
-        _selectedChoices = "none";
-        print(_selectedChoices);
-    }
-  }
-
   Future<int> deleteDialogue(String id) async {
     disguisedToast(
         context: context,
@@ -148,11 +127,9 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
         'author': author,
       }),
     );
-    //print(response.body);
-    //print('here1');
+
     if (response.statusCode == 200) {
       // >>>>>>>>>>>>>>>>>>>>>>>>>>>> RETURN OR UNDO PROMPT <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-      //print('here2');
       flush = disguisedPrompt(
           dismissible: false,
           secDur: 0,
@@ -172,8 +149,6 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
           button2Callback: () async {
             flush.dismiss(true);
             resetCtrlrFields();
-            //saveContact();
-            //s await Future.delayed(Duration(seconds: 2), () {});
           });
     } else {
       disguisedToast(
@@ -189,32 +164,26 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
     return tokenStore.getString('token');
   }
 
-  void saveContact() async {
+  void saveDialogue() async {
     int statusCode = 0;
     bool emptyDetect = false;
     List<List<String>> listedContent = <List<String>>[];
     List<String> subContent = <String>[];
     for (int i = 0; i < _count; i++) {
-      //print(colours[(_count - i - 1)]);
       subContent.add(colours[(_count - i - 1)]);
       subContent.add(contentsCtrlr[i].text);
-      //print(subContent);
       listedContent.add(subContent.toList());
-      //print(listedContent);
 
       subContent.clear();
       if (contentsCtrlr[i].text.isEmpty) {
         emptyDetect = true;
       }
     }
-    print(listedContent.reversed);
     setState(() {
       updatedDialogue = new Dialogue(titleCtrlr.text, tagsCtrlr.text,
           listedContent.reversed.toList(), authorCtrlr.text);
     });
-    print(subContent.reversed);
 
-    //print(updatedDialogue.toJson());
     if (updatedDialogue.title.isEmpty || updatedDialogue.tags.isEmpty) {
       emptyDetect = true;
     }
@@ -389,7 +358,7 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
             FAB(
               onPressed: () {
                 // >>>>>>>>>>>>>>>>>>>>>>>>>>>> SAVE BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                saveContact();
+                saveDialogue();
               },
               icon: Icon(Icons.save),
               text: "Save",
@@ -409,7 +378,6 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
   }
 
   _contentInput(int index, context) {
-    //print(contentColours[index]);
     Color currentColor = colour(colours[_count - index - 1]);
     return Column(children: <Widget>[
       Row(
@@ -418,7 +386,6 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
         children: [
           cxIconButton(
             onPressed: () {
-              //FocusManager.instance.primaryFocus?.unfocus();
               if (_count != 1) {
                 setState(() {
                   _count--;

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nexus_omega_app/model/log.dart';
 import 'dart:convert';
@@ -63,6 +62,14 @@ class _ViewLogState extends State<ViewLog> {
     Share.share(text, subject: any.title);
   }
 
+  void exportJSON(BuildContext context, Log any) {
+    //final RenderBox box = context.findRenderObject();
+    Share.share(
+      any.toJson().toString(),
+      subject: any.title + '-JSON',
+    );
+  }
+
   List<PopupItem> menu = [
     PopupItem(1, 'Update'),
     PopupItem(2, 'Delete'),
@@ -71,6 +78,7 @@ class _ViewLogState extends State<ViewLog> {
     PopupItem(4, 'Modify Author ID Size'),
     PopupItem(6, 'Font Style Toggle'),
     PopupItem(7, 'Share'),
+    PopupItem(8, 'Export JSON'),
     // PopupItem(
     //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
   ];
@@ -79,11 +87,11 @@ class _ViewLogState extends State<ViewLog> {
     setState(() {
       _selectedChoices = choice;
     });
-    print(authorIDSize.toString() +
-        ' / ' +
-        titleSize.toString() +
-        ' / ' +
-        contentSize.toString());
+    // print(authorIDSize.toString() +
+    //     ' / ' +
+    //     titleSize.toString() +
+    //     ' / ' +
+    //     contentSize.toString());
     switch (_selectedChoices) {
       case 'Update':
         //defocus();
@@ -229,6 +237,9 @@ class _ViewLogState extends State<ViewLog> {
       case 'Share':
         shareLog(context, logBuffer);
         break;
+      case 'Export JSON':
+        exportJSON(context, logBuffer);
+        break;
       case 'nukeTest':
         reExtract(widget.logID);
         // NUKE AREA
@@ -253,19 +264,19 @@ class _ViewLogState extends State<ViewLog> {
         //         }));
         break;
       default:
-        print(_selectedChoices);
-        _selectedChoices = "none";
-        print(_selectedChoices);
+      // print(_selectedChoices);
+      // _selectedChoices = "none";
+      // print(_selectedChoices);
     }
   }
 
   Future<String?> prefSetup() async {
     tokenStore = await SharedPreferences.getInstance();
     if (tokenStore.getString('token') != null) {
-      print(tokenStore.getString('token'));
+      // print(tokenStore.getString('token'));
       return tokenStore.getString('token');
     } else {
-      print(tokenStore.getString('token'));
+      // print(tokenStore.getString('token'));
       tokenStore.setString('token', 'empty');
       return 'empty token';
     }
@@ -311,7 +322,7 @@ class _ViewLogState extends State<ViewLog> {
   Future<int> deleteLog(String id) async {
     disguisedToast(
         context: context,
-        message: 'Deleting Contact',
+        message: 'Deleting Log',
         messageStyle: cxTextStyle(colour: colour('lred')));
     await Future.delayed(Duration(seconds: 2), () {});
     String retrievedToken = '';
@@ -420,10 +431,10 @@ class _ViewLogState extends State<ViewLog> {
         itemCount: temp.length,
         physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics()),
-        itemBuilder: (BuildContext context, int contactsIndex) {
+        itemBuilder: (BuildContext context, int contentIndex) {
           return Padding(
             padding: EdgeInsets.only(left: 24, bottom: 16, right: 24),
-            child: Text('     ' + temp[contactsIndex],
+            child: Text('     ' + temp[contentIndex],
                 textAlign: TextAlign.left,
                 style: cxTextStyle(
                     style: 'normal',

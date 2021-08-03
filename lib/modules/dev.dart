@@ -21,6 +21,7 @@ import 'package:share_plus/share_plus.dart';
 double contentSize = 20, titleSize = 37, authorIDSize = 13;
 
 doNoting() {}
+none() {}
 
 void share(BuildContext context, Object any) {
   //gkmnfinal RenderBox box = context.findRenderObject();
@@ -404,30 +405,34 @@ TextButton cxTextButton({
 SizedBox cxIconButton({
   required VoidCallback onPressed,
   Icon? icon,
-  Color? buttonColour,
+  Color? iconColour,
   Color? backgroundColour,
   Color? borderColour,
-  double? height,
+  double? size,
   double? width,
 }) {
   return SizedBox(
-      height: (height != null) ? height : 50,
-      width: (width != null) ? width : 50,
+      height: (size != null) ? size : 50,
+      width: (size != null) ? size : 50,
       child: Card(
         color: (backgroundColour != null) ? backgroundColour : Colors.black45,
-        shape: ContinuousRectangleBorder(
-            side: BorderSide(
-                color: (borderColour != null) ? borderColour : Colors.white,
-                width: 1.5),
-            borderRadius: BorderRadius.circular(10)),
+        shape: (icon != null)
+            ? ContinuousRectangleBorder(
+                side: BorderSide(
+                    color: (borderColour != null) ? borderColour : Colors.white,
+                    width: 1.5),
+                borderRadius: BorderRadius.circular(10))
+            : null,
         child: IconButton(
+          enableFeedback: true,
           onPressed: () {
             // >>>>>>>>>>>>>>>>>>>>>>>>>>>> CALLBACK BUTTON HERE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
             defocus();
             onPressed();
           },
-          icon: (icon != null) ? icon : Icon(Icons.warning),
-          color: (buttonColour != null) ? buttonColour : Colors.black45,
+          icon: (icon != null) ? icon : Icon(null),
+          color: (iconColour != null) ? iconColour : Colors.black45,
+          iconSize: (size != null) ? size - 24 : 24,
         ),
       ));
 }

@@ -229,7 +229,7 @@ class _LogListState extends State<LogList> {
                   },
                   icon: Icon(Icons.search_off),
                   borderColour: colour('grey'),
-                  buttonColour: colour('blue')),
+                  iconColour: colour('blue')),
               vfill(12),
             ],
           ),

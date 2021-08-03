@@ -85,8 +85,6 @@ class _MainMenuState extends State<MainMenu> {
     }
   }
 
-  none() {}
-
   late Flushbar flush;
   @override
   Widget build(BuildContext context) {
@@ -121,7 +119,7 @@ class _MainMenuState extends State<MainMenu> {
                   },
                   icon: Icon(Icons.login),
                   borderColour: colour('grey'),
-                  buttonColour: colour('blue')),
+                  iconColour: colour('blue')),
               vfill(12),
             ],
           ),

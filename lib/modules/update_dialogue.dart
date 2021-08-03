@@ -414,6 +414,7 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
       Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          /*
           Padding(
             padding: const EdgeInsets.all(15),
             child: SizedBox(
@@ -421,7 +422,38 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
               height: 24,
               child: _removeButton(index),
             ),
+          )*/
+          cxIconButton(
+            onPressed: () {
+              //FocusManager.instance.primaryFocus?.unfocus();
+              if (_count != 1) {
+                setState(() {
+                  _count--;
+                  increments--;
+                  listSize--;
+                  contentsCtrlr.removeAt(index);
+                  colours.removeAt(_count - index);
+                });
+              }
+            },
+            size: 40,
+            icon: (_count != 1) ? Icon(Icons.remove) : null,
+            iconColour: colour(''),
           ),
+          Column(children: <Widget>[
+            cxIconButton(
+              onPressed: () => doNoting(),
+              size: 40,
+              icon: Icon(Icons.arrow_upward),
+              iconColour: colour(''),
+            ),
+            cxIconButton(
+              onPressed: () => doNoting(),
+              size: 40,
+              icon: Icon(Icons.arrow_downward),
+              iconColour: colour(''),
+            ),
+          ]),
           popUpMenu(
             selectables: menu,
             onSelection: (value) {
@@ -487,18 +519,8 @@ class _UpdateDialogueState extends State<UpdateDialogue> {
         }
       },
       child: (_count != 1)
-          ? Container(
-              alignment: Alignment.center,
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: Icon(
-                Icons.cancel,
-                color: Colors.white70,
-              ),
+          ? cxIconButton(
+              onPressed: () => none(),
             )
           : null,
     );

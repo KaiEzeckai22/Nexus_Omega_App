@@ -231,7 +231,7 @@ class _DialogueListState extends State<DialogueList> {
                   },
                   icon: Icon(Icons.search_off),
                   borderColour: colour('grey'),
-                  buttonColour: colour('blue')),
+                  iconColour: colour('blue')),
               vfill(12),
             ],
           ),

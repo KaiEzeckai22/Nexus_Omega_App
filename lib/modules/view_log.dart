@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nexus_omega_app/model/log.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'dev.dart';
@@ -50,7 +51,17 @@ class _ViewLogState extends State<ViewLog> {
     //displayContent = widget.logContents;
     //delayedLogin();
   }
-  //
+
+  void shareLog(BuildContext context, Log any) {
+    //final RenderBox box = context.findRenderObject();
+    String text = 'Title: ' + any.title + '\nAuthor: ' + any.author;
+    int contentsSize = any.content.length;
+    for (int i = 0; i < contentsSize - 1; i++) {
+      text = text + '\n\n\t' + any.content[i];
+    }
+    text = text + '\n\nTags: ' + any.tags;
+    Share.share(text, subject: any.title);
+  }
 
   List<PopupItem> menu = [
     PopupItem(1, 'Update'),
@@ -59,6 +70,7 @@ class _ViewLogState extends State<ViewLog> {
     PopupItem(4, 'Modify Content Size'),
     PopupItem(4, 'Modify Author ID Size'),
     PopupItem(6, 'Font Style Toggle'),
+    PopupItem(7, 'Share'),
     // PopupItem(
     //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
   ];
@@ -213,6 +225,9 @@ class _ViewLogState extends State<ViewLog> {
             //print(importedFonts[authorFontIndex]);
           },
         );
+        break;
+      case 'Share':
+        shareLog(context, logBuffer);
         break;
       case 'nukeTest':
         reExtract(widget.logID);

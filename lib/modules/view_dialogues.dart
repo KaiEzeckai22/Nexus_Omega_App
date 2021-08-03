@@ -60,10 +60,10 @@ class _ViewDialogueState extends State<ViewDialogue> {
     String text = 'Title: ' + any.title + '\nAuthor: ' + any.author;
     int contentsSize = any.content.length;
     for (int i = 0; i < contentsSize - 1; i++) {
-      text = text + '\n\t' + any.content[i][1];
+      text = text + '\n\n\t' + any.content[i][1];
     }
-    text = text + '\nTags: ' + any.tags;
-    Share.share(text);
+    text = text + '\n\nTags: ' + any.tags;
+    Share.share(text, subject: any.title);
   }
 
   List<PopupItem> menu = [

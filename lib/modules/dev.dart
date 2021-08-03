@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:dbcrypt/dbcrypt.dart';
 //import 'package:flushbar/flushbar.dart';
 import 'package:another_flushbar/flushbar.dart';
+import 'package:share_plus/share_plus.dart';
 //import 'package:another_flushbar/flushbar_helper.dart';
 //import 'package:another_flushbar/flushbar_route.dart';
 //import 'package:crypto/crypto.dart';
@@ -20,6 +21,12 @@ import 'package:another_flushbar/flushbar.dart';
 double contentSize = 20, titleSize = 37, authorIDSize = 13;
 
 doNoting() {}
+
+void share(BuildContext context, Object any) {
+  //gkmnfinal RenderBox box = context.findRenderObject();
+
+  Share.share(any.toString());
+}
 
 Color colour(String? colour) {
   switch (colour) {

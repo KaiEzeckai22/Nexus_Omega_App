@@ -9,6 +9,7 @@ import 'package:another_flushbar/flushbar.dart';
 import 'dev.dart';
 import 'update_dialogue.dart';
 import 'update_log.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ViewDialogue extends StatefulWidget {
   final String dialogueTitle, dialogueTags, dialogueID, dialogueAuthor;
@@ -52,7 +53,18 @@ class _ViewDialogueState extends State<ViewDialogue> {
     //displayContent = widget.dialogueContents;
     //delayeddialoguein();
   }
+
   //
+  void shareDialogue(BuildContext context, Dialogue any) {
+    //final RenderBox box = context.findRenderObject();
+    String text = 'Title: ' + any.title + '\nAuthor: ' + any.author;
+    int contentsSize = any.content.length;
+    for (int i = 0; i < contentsSize - 1; i++) {
+      text = text + '\n\t' + any.content[i][1];
+    }
+    text = text + '\nTags: ' + any.tags;
+    Share.share(text);
+  }
 
   List<PopupItem> menu = [
     PopupItem(1, 'Update'),
@@ -61,6 +73,7 @@ class _ViewDialogueState extends State<ViewDialogue> {
     PopupItem(4, 'Modify Content Size'),
     PopupItem(5, 'Modify Author ID Size'),
     PopupItem(6, 'Font Style Toggle'),
+    PopupItem(7, 'Share'),
     // PopupItem(
     //     0, 'nukeTest'), // <<< UNCOMMENT THIS TO ACTIVATE NUKE TEST AREA/BUTTON
   ];
@@ -214,6 +227,9 @@ class _ViewDialogueState extends State<ViewDialogue> {
             //print(importedFonts[authorFontIndex]);
           },
         );
+        break;
+      case 'Share':
+        shareDialogue(context, dialogueBuffer);
         break;
       case 'nukeTest':
         reExtract(widget.dialogueID);

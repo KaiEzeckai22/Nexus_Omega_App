@@ -17,6 +17,7 @@ class CreateNewDialogue extends StatefulWidget {
 class _CreateNewDialogueState extends State<CreateNewDialogue> {
   int key = 0, increments = 0, listSize = 1, _count = 1;
   late SharedPreferences tokenStore;
+  String stringBuffer = '';
 
   TextEditingController titleCtrlr = TextEditingController();
   TextEditingController tagsCtrlr = TextEditingController();
@@ -386,16 +387,76 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
     Color currentColor = colour(colours[_count - index - 1]);
     return Column(children: <Widget>[
       Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(15),
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: _removeButton(index),
-            ),
+          cxIconButton(
+            onPressed: () {
+              //FocusManager.instance.primaryFocus?.unfocus();
+              if (_count != 1) {
+                setState(() {
+                  _count--;
+                  increments--;
+                  listSize--;
+                  contentsCtrlr.removeAt(index);
+                  colours.removeAt(_count - index);
+                });
+              }
+            },
+            icon: (_count != 1) ? Icon(Icons.remove) : null,
+            iconColour: colour(''),
           ),
+          Column(children: <Widget>[
+            cxIconButton(
+              onPressed: () {
+                setState(() {
+                  if (index < contentsCtrlr.length - 1) {
+                    stringBuffer = contentsCtrlr[index].text;
+                    contentsCtrlr[index].text = contentsCtrlr[index + 1].text;
+                    contentsCtrlr[index + 1].text = stringBuffer;
+
+                    stringBuffer = colours[_count - index - 1];
+                    colours[_count - index - 1] = colours[_count - index - 2];
+                    colours[_count - index - 2] = stringBuffer;
+                  }
+                });
+              },
+              height: 35,
+              width: 35,
+              iconSize: 11,
+              icon: ((index == 0) && (index == contentsCtrlr.length - 1))
+                  ? null
+                  : (index == contentsCtrlr.length - 1)
+                      ? Icon(Icons.not_interested)
+                      : Icon(Icons.arrow_upward),
+              iconColour: colour(''),
+            ),
+            cxIconButton(
+              onPressed: () {
+                setState(() {
+                  if (index > 0) {
+                    //  WORKING TEXT SWAP
+                    stringBuffer = contentsCtrlr[index].text;
+                    contentsCtrlr[index].text = contentsCtrlr[index - 1].text;
+                    contentsCtrlr[index - 1].text = stringBuffer;
+
+                    stringBuffer = colours[_count - index - 1];
+                    colours[_count - index - 1] = colours[_count - index];
+                    colours[_count - index] = stringBuffer;
+                  }
+                });
+              },
+              height: 35,
+              width: 35,
+              iconSize: 11,
+              icon: ((index == 0) && (index == contentsCtrlr.length - 1))
+                  ? null
+                  : (index == 0)
+                      ? Icon(Icons.not_interested)
+                      : Icon(Icons.arrow_downward),
+              iconColour: colour(''),
+            ),
+          ]),
           popUpMenu(
             selectables: menu,
             onSelection: (value) {
@@ -411,12 +472,6 @@ class _CreateNewDialogueState extends State<CreateNewDialogue> {
             popupColour: colour('black'),
             fontSize: 15,
           ),
-          /*
-          cxIconButton(
-            onPressed: () => colorSelect(),
-            icon: Icon(Icons.color_lens, color: currentColor),
-            borderColour: currentColor,
-          ),*/
           Expanded(
             child: ctrlrField(
               context: context,

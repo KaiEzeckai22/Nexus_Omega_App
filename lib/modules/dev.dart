@@ -408,12 +408,13 @@ SizedBox cxIconButton({
   Color? iconColour,
   Color? backgroundColour,
   Color? borderColour,
-  double? size,
+  double? height,
   double? width,
+  double? iconSize,
 }) {
   return SizedBox(
-      height: (size != null) ? size : 50,
-      width: (size != null) ? size : 50,
+      height: (height != null) ? height : 50,
+      width: (width != null) ? width : 50,
       child: Card(
         color: (backgroundColour != null) ? backgroundColour : Colors.black45,
         shape: (icon != null)
@@ -432,7 +433,7 @@ SizedBox cxIconButton({
           },
           icon: (icon != null) ? icon : Icon(null),
           color: (iconColour != null) ? iconColour : Colors.black45,
-          iconSize: (size != null) ? size - 24 : 24,
+          iconSize: (iconSize != null) ? iconSize : 24,
         ),
       ));
 }

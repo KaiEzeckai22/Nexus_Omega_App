@@ -27,6 +27,7 @@ class UpdateLog extends StatefulWidget {
 class _UpdateLogState extends State<UpdateLog> {
   int key = 0, increments = 0, listSize = 1, _count = 1;
   late SharedPreferences tokenStore;
+  String stringBuffer = '';
 
   TextEditingController titleCtrlr = TextEditingController();
   TextEditingController tagsCtrlr = TextEditingController();
@@ -379,16 +380,68 @@ class _UpdateLogState extends State<UpdateLog> {
   _contentInput(int index, context) {
     return Column(children: <Widget>[
       Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(15),
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: _removeButton(index),
-            ),
+          cxIconButton(
+            onPressed: () {
+              //FocusManager.instance.primaryFocus?.unfocus();
+              if (_count != 1) {
+                setState(() {
+                  _count--;
+                  increments--;
+                  listSize--;
+                  contentsCtrlr.removeAt(index);
+                });
+              }
+            },
+            icon: (_count != 1) ? Icon(Icons.remove) : null,
+            iconColour: colour(''),
           ),
+          Column(children: <Widget>[
+            cxIconButton(
+              onPressed: () {
+                setState(() {
+                  if (index < contentsCtrlr.length - 2) {
+                    //  WORKING TEXT SWAP
+                    stringBuffer = contentsCtrlr[index].text;
+                    contentsCtrlr[index].text = contentsCtrlr[index + 1].text;
+                    contentsCtrlr[index + 1].text = stringBuffer;
+                  }
+                });
+              },
+              height: 35,
+              width: 35,
+              iconSize: 11,
+              icon: ((index == 0) && (index == contentsCtrlr.length - 2))
+                  ? null
+                  : (index == contentsCtrlr.length - 2)
+                      ? Icon(Icons.not_interested)
+                      : Icon(Icons.arrow_upward),
+              iconColour: colour(''),
+            ),
+            cxIconButton(
+              onPressed: () {
+                setState(() {
+                  if (index > 0) {
+                    //  WORKING TEXT SWAP
+                    stringBuffer = contentsCtrlr[index].text;
+                    contentsCtrlr[index].text = contentsCtrlr[index - 1].text;
+                    contentsCtrlr[index - 1].text = stringBuffer;
+                  } else {}
+                });
+              },
+              height: 35,
+              width: 35,
+              iconSize: 11,
+              icon: ((index == 0) && (index == contentsCtrlr.length - 2))
+                  ? null
+                  : (index == 0)
+                      ? Icon(Icons.not_interested)
+                      : Icon(Icons.arrow_downward),
+              iconColour: colour(''),
+            ),
+          ]),
           Expanded(
             child: ctrlrField(
               context: context,
@@ -418,34 +471,34 @@ class _UpdateLogState extends State<UpdateLog> {
     ]);
   }
 
-  Widget _removeButton(int index) {
-    return InkWell(
-      onTap: () {
-        //FocusManager.instance.primaryFocus?.unfocus();
-        if (_count != 1) {
-          setState(() {
-            _count--;
-            increments--;
-            listSize--;
-            contentsCtrlr.removeAt(index);
-          });
-        }
-      },
-      child: (_count != 1)
-          ? Container(
-              alignment: Alignment.center,
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(40),
-              ),
-              child: Icon(
-                Icons.cancel,
-                color: Colors.white70,
-              ),
-            )
-          : null,
-    );
-  }
+  // Widget _removeButton(int index) {
+  //   return InkWell(
+  //     onTap: () {
+  //       //FocusManager.instance.primaryFocus?.unfocus();
+  //       if (_count != 1) {
+  //         setState(() {
+  //           _count--;
+  //           increments--;
+  //           listSize--;
+  //           contentsCtrlr.removeAt(index);
+  //         });
+  //       }
+  //     },
+  //     child: (_count != 1)
+  //         ? Container(
+  //             alignment: Alignment.center,
+  //             width: 24,
+  //             height: 24,
+  //             decoration: BoxDecoration(
+  //               color: Colors.grey,
+  //               borderRadius: BorderRadius.circular(40),
+  //             ),
+  //             child: Icon(
+  //               Icons.cancel,
+  //               color: Colors.white70,
+  //             ),
+  //           )
+  //         : null,
+  //   );
+  // }
 }

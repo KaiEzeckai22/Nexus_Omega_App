@@ -15,6 +15,7 @@ class CreateNewLog extends StatefulWidget {
 
 class _CreateNewLogState extends State<CreateNewLog> {
   int key = 0, increments = 0, listSize = 1, _count = 1;
+  String stringBuffer = '';
 
   final titleCtrlr = TextEditingController();
   final tagsCtrlr = TextEditingController();
@@ -267,17 +268,68 @@ class _CreateNewLogState extends State<CreateNewLog> {
   _contentInput(int index, context) {
     return Column(children: <Widget>[
       Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // >>>>>>>>>>>>>>>>>>>>>>>>>>>> INCREMENTING CONTACT FIELDS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-          Padding(
-            padding: const EdgeInsets.all(15),
-            child: SizedBox(
-              width: 24,
-              height: 24,
-              child: _removeButton(index),
-            ),
+          cxIconButton(
+            onPressed: () {
+              //FocusManager.instance.primaryFocus?.unfocus();
+              if (_count != 1) {
+                setState(() {
+                  _count--;
+                  increments--;
+                  listSize--;
+                  contentsCtrlr.removeAt(index);
+                });
+              }
+            },
+            icon: (_count != 1) ? Icon(Icons.remove) : null,
+            iconColour: colour(''),
           ),
+          Column(children: <Widget>[
+            cxIconButton(
+              onPressed: () {
+                setState(() {
+                  if (index < contentsCtrlr.length - 1) {
+                    //  WORKING TEXT SWAP
+                    stringBuffer = contentsCtrlr[index].text;
+                    contentsCtrlr[index].text = contentsCtrlr[index + 1].text;
+                    contentsCtrlr[index + 1].text = stringBuffer;
+                  }
+                });
+              },
+              height: 35,
+              width: 35,
+              iconSize: 11,
+              icon: ((index == 0) && (index == contentsCtrlr.length - 1))
+                  ? null
+                  : (index == contentsCtrlr.length - 1)
+                      ? Icon(Icons.not_interested)
+                      : Icon(Icons.arrow_upward),
+              iconColour: colour(''),
+            ),
+            cxIconButton(
+              onPressed: () {
+                setState(() {
+                  if (index > 0) {
+                    //  WORKING TEXT SWAP
+                    stringBuffer = contentsCtrlr[index].text;
+                    contentsCtrlr[index].text = contentsCtrlr[index - 1].text;
+                    contentsCtrlr[index - 1].text = stringBuffer;
+                  } else {}
+                });
+              },
+              height: 35,
+              width: 35,
+              iconSize: 11,
+              icon: ((index == 0) && (index == contentsCtrlr.length - 1))
+                  ? null
+                  : (index == 0)
+                      ? Icon(Icons.not_interested)
+                      : Icon(Icons.arrow_downward),
+              iconColour: colour(''),
+            ),
+          ]),
           Expanded(
             child: ctrlrField(
               context: context,
